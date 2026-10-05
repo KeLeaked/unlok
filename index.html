@@ -34,7 +34,11 @@
             cursor: pointer; transition: transform 0.2s;
             user-select: none; -webkit-tap-highlight-color: transparent;
             filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.2));
+            display: flex; align-items: center; justify-content: center;
+            height: 150px; /* Mantém a altura fixa para não pular a tela */
         }
+        
+        /* Animação do coração batendo (quando recebe) */
         .heart.beating {
             animation: pulse 1s infinite alternate;
             filter: drop-shadow(0 0 30px rgba(255, 50, 0, 0.8));
@@ -43,6 +47,17 @@
             0% { transform: scale(1); }
             100% { transform: scale(1.2); }
         }
+
+        /* Animação de quando o outro viu (Coração Mágico) */
+        .heart.glowing {
+            animation: glow 1.5s infinite alternate;
+        }
+        @keyframes glow {
+            0% { filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.5)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 40px rgba(255, 105, 180, 1)); transform: scale(1.2); }
+            100% { filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.5)); transform: scale(1); }
+        }
+
         .status-text { font-size: 18px; min-height: 60px; color: #ff9999; }
         .instructions { font-size: 14px; color: #888; margin-top: 30px; line-height: 1.5; }
     </style>
@@ -60,7 +75,7 @@
     <!-- TELA 2: O CORAÇÃO -->
     <div id="app-screen" class="container">
         <h3 id="greeting">...</h3>
-        <div id="heart-btn" class="heart">❤️️</div>
+        <div id="heart-btn" class="heart">❤️</div>
         <div id="status" class="status-text">Conectando ao coração...</div>
         <div class="instructions">
             • Toque <b>1 vez</b> no coração para enviar um pensamento<br>
@@ -81,8 +96,7 @@
             projectId: "nosso-coracao",
             storageBucket: "nosso-coracao.firebasestorage.app",
             messagingSenderId: "560106544356",
-            appId: "1:560106544356:web:25926da1705d98941da0f1",
-            measurementId: "G-C61N75YL2R"
+            appId: "1:560106544356:web:25926da1705d98941da0f1"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -90,14 +104,19 @@
 
         let usuarioAtual = "";
         let parceiro = "";
+        let nomeExibicaoParceiro = "";
+        let pronomeParceiro = "";
         
+        let meuEstado = "idle";
+        let estadoParceiro = "idle";
+
         let tapTimeout = null;
         let lastTap = 0;
 
-        // Referências no banco de dados
+        // Referências no banco de dados (agora guarda 'idle', 'pensando' ou 'visto')
         const dbRefs = {
-            kevin: ref(db, 'pensando/kevin'), // Status do Kevin
-            Ana: ref(db, 'pensando/Ana')  // Status da Ana
+            kevin: ref(db, 'status/kevin'), 
+            Ana: ref(db, 'status/Ana') 
         };
 
         // Verifica a senha e define quem está acessando
@@ -107,10 +126,14 @@
             if (senhaDigitada === '1509') {
                 usuarioAtual = 'kevin';
                 parceiro = 'Ana';
+                nomeExibicaoParceiro = 'A Ana';
+                pronomeParceiro = 'ela';
                 prepararTela('Kevin', '💙');
             } else if (senhaDigitada === '1507') {
                 usuarioAtual = 'Ana';
                 parceiro = 'kevin';
+                nomeExibicaoParceiro = 'O Kevin';
+                pronomeParceiro = 'ele';
                 prepararTela('Ana', '🔥');
             } else {
                 alert('Senha incorreta!');
@@ -122,54 +145,97 @@
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-screen').style.display = 'block';
             document.getElementById('greeting').innerText = `Olá, ${nomeExibicao} ${icone}`;
+            
+            // Força o estado inicial para limpar lixo antigo do banco
+            set(dbRefs[usuarioAtual], 'idle');
+            
             iniciarMonitoramento();
+        }
+
+        function atualizarTela() {
+            const heartBtn = document.getElementById('heart-btn');
+            const statusText = document.getElementById('status');
+
+            // Limpa as animações para não acumularem
+            heartBtn.classList.remove('beating', 'glowing');
+
+            // SITUAÇÃO 1: O Parceiro viu o meu pensamento! (Uhuuul)
+            if (meuEstado === 'visto') {
+                statusText.innerHTML = `<b>${nomeExibicaoParceiro} sentiu o seu coração! 🥰✨</b>`;
+                heartBtn.innerText = "💖";
+                heartBtn.classList.add('glowing');
+                
+                // Volta ao normal sozinho depois de 4 segundos
+                setTimeout(() => {
+                    if(meuEstado === 'visto') set(dbRefs[usuarioAtual], 'idle');
+                }, 4000);
+                return; // Para a verificação aqui
+            }
+
+            // SITUAÇÃO 2: O Parceiro está pensando em mim
+            if (estadoParceiro === 'pensando') {
+                statusText.innerHTML = `<b>${nomeExibicaoParceiro} está pensando em você!</b><br>Toque 2 vezes para avisar que sentiu.`;
+                heartBtn.innerText = "❤️";
+                heartBtn.classList.add('beating');
+                return;
+            }
+
+            // SITUAÇÃO 3: Eu mandei um pensamento e estou aguardando ela(e) ver
+            if (meuEstado === 'pensando') {
+                statusText.innerHTML = `Pensamento enviado...<br>Aguardando ${pronomeParceiro} sentir.`;
+                heartBtn.innerText = "❤️";
+                return;
+            }
+
+            // SITUAÇÃO 4: Tudo calmo (Ninguém enviou nada)
+            statusText.innerHTML = "Tudo calmo por aqui.<br>Toque no coração para enviar um pensamento.";
+            heartBtn.innerText = "❤️";
         }
 
         function iniciarMonitoramento() {
             const heartBtn = document.getElementById('heart-btn');
-            const statusText = document.getElementById('status');
 
-            // Fica "escutando" se o parceiro mandou algo
-            onValue(dbRefs[parceiro], (snapshot) => {
-                const parceiroPensandoEmMim = snapshot.val();
-                
-                if (parceiroPensandoEmMim) {
-                    // O parceiro tocou lá! O coração começa a bater aqui.
-                    heartBtn.classList.add('beating');
-                    let nomeParceiro = parceiro === 'Ana' ? 'A Ana' : 'O Kevin';
-                    statusText.innerHTML = `<b>${nomeParceiro} está pensando em você!</b><br>Toque 2 vezes para avisar que viu.`;
-                } else {
-                    // Estado normal
-                    heartBtn.classList.remove('beating');
-                    statusText.innerHTML = "Tudo calmo por aqui.<br>Toque no coração para enviar um pensamento.";
-                }
+            // Fica escutando as mudanças do MEU estado (pra saber se ela(e) me deu 'visto')
+            onValue(dbRefs[usuarioAtual], (snapshot) => {
+                meuEstado = snapshot.val() || 'idle';
+                atualizarTela();
             });
 
-            // Lógica do toque no coração (simples e duplo)
+            // Fica escutando as mudanças do estado do PARCEIRO (pra saber se tá 'pensando' em mim)
+            onValue(dbRefs[parceiro], (snapshot) => {
+                estadoParceiro = snapshot.val() || 'idle';
+                atualizarTela();
+            });
+
+            // Lógica do toque (simples e duplo)
             heartBtn.addEventListener('click', function(e) {
                 let currentTime = new Date().getTime();
                 let tapLength = currentTime - lastTap;
                 
                 if (tapLength < 500 && tapLength > 0) {
-                    // ===== TOQUE DUPLO (Recebeu e visualizou) =====
+                    // ===== TOQUE DUPLO (Confirmação de que você viu) =====
                     clearTimeout(tapTimeout);
-                    set(dbRefs[parceiro], false); // Zera o aviso do parceiro
                     
-                    let nomeParceiro = parceiro === 'Ana' ? 'a Ana' : 'o Kevin';
-                    statusText.innerHTML = `Você sentiu o coração d${nomeParceiro === 'a Ana' ? 'a Ana' : 'o Kevin'}!`;
-                    
-                    heartBtn.innerText = "✨";
-                    setTimeout(() => heartBtn.innerText = "❤️", 1000);
+                    // Só faz sentido dar toque duplo se o parceiro mandou algo
+                    if (estadoParceiro === 'pensando') {
+                        // Avisa o parceiro que VOCÊ viu
+                        set(dbRefs[parceiro], 'visto');
+                        
+                        // Uma animação rápida na sua tela
+                        heartBtn.innerText = "✨";
+                        setTimeout(() => heartBtn.innerText = "❤️", 500);
+                    }
                 } else {
-                    // ===== TOQUE ÚNICO (Enviando pensamento) =====
+                    // ===== TOQUE ÚNICO (Enviando o pensamento) =====
                     tapTimeout = setTimeout(function() {
-                        set(dbRefs[usuarioAtual], true); // Avisa que você pensou
-                        
-                        let pronome = parceiro === 'Ana' ? 'ela' : 'ele';
-                        statusText.innerHTML = `Pensamento enviado...<br>Aguardando ${pronome} sentir.`;
-                        
-                        heartBtn.style.transform = "scale(0.8)";
-                        setTimeout(() => heartBtn.style.transform = "scale(1)", 150);
+                        // Só envia se eu não estiver no meio de um envio
+                        if (meuEstado !== 'pensando' && meuEstado !== 'visto') {
+                            set(dbRefs[usuarioAtual], 'pensando');
+                            
+                            // Efeito rápido de click
+                            heartBtn.style.transform = "scale(0.8)";
+                            setTimeout(() => heartBtn.style.transform = "scale(1)", 150);
+                        }
                     }, 500);
                 }
                 lastTap = currentTime;

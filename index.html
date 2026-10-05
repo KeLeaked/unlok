@@ -97,7 +97,7 @@
         // Referências no banco de dados
         const dbRefs = {
             kevin: ref(db, 'pensando/kevin'), // Status do Kevin
-            maria: ref(db, 'pensando/maria')  // Status da Maria
+            Ana: ref(db, 'pensando/Ana')  // Status da Ana
         };
 
         // Verifica a senha e define quem está acessando
@@ -106,12 +106,12 @@
 
             if (senhaDigitada === '1509') {
                 usuarioAtual = 'kevin';
-                parceiro = 'maria';
+                parceiro = 'Ana';
                 prepararTela('Kevin', '💙');
             } else if (senhaDigitada === '1507') {
-                usuarioAtual = 'maria';
+                usuarioAtual = 'Ana';
                 parceiro = 'kevin';
-                prepararTela('Maria', '🔥');
+                prepararTela('Ana', '🔥');
             } else {
                 alert('Senha incorreta!');
                 document.getElementById('senha').value = '';
@@ -136,7 +136,7 @@
                 if (parceiroPensandoEmMim) {
                     // O parceiro tocou lá! O coração começa a bater aqui.
                     heartBtn.classList.add('beating');
-                    let nomeParceiro = parceiro === 'maria' ? 'A Maria' : 'O Kevin';
+                    let nomeParceiro = parceiro === 'Ana' ? 'A Ana' : 'O Kevin';
                     statusText.innerHTML = `<b>${nomeParceiro} está pensando em você!</b><br>Toque 2 vezes para avisar que viu.`;
                 } else {
                     // Estado normal
@@ -155,8 +155,8 @@
                     clearTimeout(tapTimeout);
                     set(dbRefs[parceiro], false); // Zera o aviso do parceiro
                     
-                    let nomeParceiro = parceiro === 'maria' ? 'a Maria' : 'o Kevin';
-                    statusText.innerHTML = `Você sentiu o coração d${nomeParceiro === 'a Maria' ? 'a Maria' : 'o Kevin'}!`;
+                    let nomeParceiro = parceiro === 'Ana' ? 'a Ana' : 'o Kevin';
+                    statusText.innerHTML = `Você sentiu o coração d${nomeParceiro === 'a Ana' ? 'a Ana' : 'o Kevin'}!`;
                     
                     heartBtn.innerText = "✨";
                     setTimeout(() => heartBtn.innerText = "❤️", 1000);
@@ -165,7 +165,7 @@
                     tapTimeout = setTimeout(function() {
                         set(dbRefs[usuarioAtual], true); // Avisa que você pensou
                         
-                        let pronome = parceiro === 'maria' ? 'ela' : 'ele';
+                        let pronome = parceiro === 'Ana' ? 'ela' : 'ele';
                         statusText.innerHTML = `Pensamento enviado...<br>Aguardando ${pronome} sentir.`;
                         
                         heartBtn.style.transform = "scale(0.8)";

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nosso Coração</title>
+    <style>
+        body {
+            margin: 0; padding: 0;
+            background-color: #1a0000;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            height: 100vh; overflow: hidden;
+            text-align: center;
+        }
+        .container { display: none; width: 100%; max-width: 400px; padding: 20px; box-sizing: border-box; }
+        #login-screen { display: flex; flex-direction: column; gap: 15px; }
+        input {
+            padding: 15px; border-radius: 10px; border: none;
+            font-size: 18px; text-align: center; background: #330000; color: white;
+            width: 100%; box-sizing: border-box;
+        }
+        button {
+            padding: 15px; border-radius: 10px; border: none;
+            background: #ff3333; color: white; font-size: 18px; font-weight: bold;
+            cursor: pointer; transition: 0.2s; width: 100%;
+        }
+        button:active { transform: scale(0.95); }
+        
+        .heart {
+            font-size: 120px; margin: 40px auto;
+            cursor: pointer; transition: transform 0.2s;
+            user-select: none; -webkit-tap-highlight-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.2));
+        }
+        .heart.beating {
+            animation: pulse 1s infinite alternate;
+            filter: drop-shadow(0 0 30px rgba(255, 50, 0, 0.8));
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
+        }
+        .status-text { font-size: 18px; min-height: 60px; color: #ff9999; }
+        .instructions { font-size: 14px; color: #888; margin-top: 30px; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+    <!-- TELA 1: SENHA -->
+    <div id="login-screen" class="container" style="display: flex;">
+        <h2>Nosso Espaço</h2>
+        <p style="color: #888; font-size: 14px; margin-top: -10px;">Digite sua senha pessoal</p>
+        <input type="password" id="senha" placeholder="Senha numéica" inputmode="numeric">
+        <button onclick="verificarSenha()">Entrar</button>
+    </div>
+
+    <!-- TELA 2: O CORAÇÃO -->
+    <div id="app-screen" class="container">
+        <h3 id="greeting">...</h3>
+        <div id="heart-btn" class="heart">❤️</div>
+        <div id="status" class="status-text">Conectando ao coração...</div>
+        <div class="instructions">
+            • Toque <b>1 vez</b> no coração para enviar um pensamento<br>
+            • Toque <b>2 vezes</b> para avisar que viu o dela(e)
+        </div>
+    </div>
+
+    <!-- FIREBASE (Obrigatoriamente via Módulos) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        // ==========================================
+        // COLOQUE SUAS CHAVES DO FIREBASE AQUI
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            authDomain: "SEU_PROJETO.firebaseapp.com",
+            databaseURL: "https://SEU_PROJETO.firebasedatabase.app",
+            projectId: "SEU_PROJETO",
+            storageBucket: "SEU_PROJETO.appspot.com",
+            messagingSenderId: "SEU_MESSAGING_ID",
+            appId: "SEU_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let usuarioAtual = "";
+        let parceiro = "";
+        
+        let tapTimeout = null;
+        let lastTap = 0;
+
+        // Referências no banco de dados
+        const dbRefs = {
+            kevin: ref(db, 'pensando/kevin'), // Status do Kevin
+            maria: ref(db, 'pensando/maria')  // Status da Maria
+        };
+
+        // Verifica a senha e define quem está acessando
+        window.verificarSenha = function() {
+            const senhaDigitada = document.getElementById('senha').value;
+
+            if (senhaDigitada === '1509') {
+                usuarioAtual = 'kevin';
+                parceiro = 'maria';
+                prepararTela('Kevin', '💙');
+            } else if (senhaDigitada === '1507') {
+                usuarioAtual = 'maria';
+                parceiro = 'kevin';
+                prepararTela('Maria', '🔥');
+            } else {
+                alert('Senha incorreta!');
+                document.getElementById('senha').value = '';
+            }
+        }
+
+        function prepararTela(nomeExibicao, icone) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-screen').style.display = 'block';
+            document.getElementById('greeting').innerText = `Olá, ${nomeExibicao} ${icone}`;
+            iniciarMonitoramento();
+        }
+
+        function iniciarMonitoramento() {
+            const heartBtn = document.getElementById('heart-btn');
+            const statusText = document.getElementById('status');
+
+            // Fica "escutando" se o parceiro mandou algo
+            onValue(dbRefs[parceiro], (snapshot) => {
+                const parceiroPensandoEmMim = snapshot.val();
+                
+                if (parceiroPensandoEmMim) {
+                    // O parceiro tocou lá! O coração começa a bater aqui.
+                    heartBtn.classList.add('beating');
+                    let nomeParceiro = parceiro === 'maria' ? 'A Maria' : 'O Kevin';
+                    statusText.innerHTML = `<b>${nomeParceiro} está pensando em você!</b><br>Toque 2 vezes para avisar que viu.`;
+                } else {
+                    // Estado normal
+                    heartBtn.classList.remove('beating');
+                    statusText.innerHTML = "Tudo calmo por aqui.<br>Toque no coração para enviar um pensamento.";
+                }
+            });
+
+            // Lógica do toque no coração (simples e duplo)
+            heartBtn.addEventListener('click', function(e) {
+                let currentTime = new Date().getTime();
+                let tapLength = currentTime - lastTap;
+                
+                if (tapLength < 500 && tapLength > 0) {
+                    // ===== TOQUE DUPLO (Recebeu e visualizou) =====
+                    clearTimeout(tapTimeout);
+                    set(dbRefs[parceiro], false); // Zera o aviso do parceiro
+                    
+                    let nomeParceiro = parceiro === 'maria' ? 'a Maria' : 'o Kevin';
+                    statusText.innerHTML = `Você sentiu o coração d${nomeParceiro === 'a Maria' ? 'a Maria' : 'o Kevin'}!`;
+                    
+                    heartBtn.innerText = "✨";
+                    setTimeout(() => heartBtn.innerText = "❤️", 1000);
+                } else {
+                    // ===== TOQUE ÚNICO (Enviando pensamento) =====
+                    tapTimeout = setTimeout(function() {
+                        set(dbRefs[usuarioAtual], true); // Avisa que você pensou
+                        
+                        let pronome = parceiro === 'maria' ? 'ela' : 'ele';
+                        statusText.innerHTML = `Pensamento enviado...<br>Aguardando ${pronome} sentir.`;
+                        
+                        heartBtn.style.transform = "scale(0.8)";
+                        setTimeout(() => heartBtn.style.transform = "scale(1)", 150);
+                    }, 500);
+                }
+                lastTap = currentTime;
+            });
+        }
+    </script>
+</body>
+</html>

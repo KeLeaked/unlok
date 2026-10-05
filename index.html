@@ -14,8 +14,9 @@
             align-items: center; justify-content: center;
             height: 100vh; overflow: hidden;
             text-align: center;
+            position: relative;
         }
-        .container { display: none; width: 100%; max-width: 400px; padding: 20px; box-sizing: border-box; }
+        .container { display: none; width: 100%; max-width: 400px; padding: 20px; box-sizing: border-box; z-index: 10; }
         #login-screen { display: flex; flex-direction: column; gap: 15px; }
         input {
             padding: 15px; border-radius: 10px; border: none;
@@ -57,7 +58,33 @@
         }
 
         .status-text { font-size: 18px; min-height: 60px; color: #ff9999; }
-        .instructions { font-size: 14px; color: #888; margin-top: 30px; line-height: 1.5; }
+        .instructions { font-size: 14px; color: #888; margin-top: 10px; line-height: 1.5; }
+
+        /* Estilos da Barra de Emojis */
+        .emoji-bar {
+            display: flex; justify-content: center; gap: 15px;
+            margin-top: 30px; padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+        }
+        .emoji-btn {
+            background: none; border: none; font-size: 30px;
+            padding: 0; cursor: pointer; transition: 0.2s;
+            user-select: none; -webkit-tap-highlight-color: transparent;
+            width: auto;
+        }
+        .emoji-btn:active { transform: scale(0.7); }
+
+        /* Efeito do Emoji Flutuante */
+        .floating-emoji {
+            position: absolute; bottom: 100px;
+            font-size: 40px; pointer-events: none; z-index: 5;
+            animation: floatUp 3s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-300px) scale(1.5); }
+        }
     </style>
 </head>
 <body>
@@ -70,14 +97,23 @@
         <button onclick="verificarSenha()">Entrar</button>
     </div>
 
-    <!-- TELA 2: O CORAÇÃO -->
+    <!-- TELA 2: O CORAÇÃO E CHAT -->
     <div id="app-screen" class="container">
         <h3 id="greeting">...</h3>
         <div id="heart-btn" class="heart">❤️</div>
         <div id="status" class="status-text">Conectando ao coração...</div>
         <div class="instructions">
             • Toque <b>1 vez</b> no coração para enviar um pensamento<br>
-            • Toque <b>2 vezes</b> para avisar que viu o dela(e)
+            • Toque <b>2 vezes</b> para avisar que viu
+        </div>
+        
+        <!-- MINI CHAT DE EMOJIS -->
+        <div class="emoji-bar">
+            <button class="emoji-btn" onclick="enviarEmoji('🥺')">🥺</button>
+            <button class="emoji-btn" onclick="enviarEmoji('😭')">😭</button>
+            <button class="emoji-btn" onclick="enviarEmoji('😘')">😘</button>
+            <button class="emoji-btn" onclick="enviarEmoji('🫂')">🫂</button>
+            <button class="emoji-btn" onclick="enviarEmoji('🔥')">🔥</button>
         </div>
     </div>
 
@@ -86,7 +122,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
-        // Suas chaves do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyD15BizvlLZEvZPi4VJDOJ-aI7t1lcNQi4",
             authDomain: "nosso-coracao.firebaseapp.com",
@@ -110,29 +145,32 @@
 
         let tapTimeout = null;
         let lastTap = 0;
+        let ultimaVerificacaoEmoji = Date.now(); // Evita que emojis antigos apareçam ao recarregar a página
 
-        // Referências no banco de dados
         const dbRefs = {
             kevin: ref(db, 'status/kevin'), 
-            Ana: ref(db, 'status/Ana') 
+            maria: ref(db, 'status/maria') 
+        };
+        const emojiRefs = {
+            kevin: ref(db, 'emoji/kevin'),
+            maria: ref(db, 'emoji/maria')
         };
 
-        // Verifica a senha e define quem está acessando
         window.verificarSenha = function() {
             const senhaDigitada = document.getElementById('senha').value;
 
             if (senhaDigitada === '1509') {
                 usuarioAtual = 'kevin';
-                parceiro = 'Ana';
-                nomeExibicaoParceiro = 'A Ana';
+                parceiro = 'maria';
+                nomeExibicaoParceiro = 'A Maria';
                 pronomeParceiro = 'ela';
                 prepararTela('Kevin', '💙');
             } else if (senhaDigitada === '1507') {
-                usuarioAtual = 'Ana';
+                usuarioAtual = 'maria';
                 parceiro = 'kevin';
                 nomeExibicaoParceiro = 'O Kevin';
                 pronomeParceiro = 'ele';
-                prepararTela('Ana', '🔥');
+                prepararTela('Maria', '🔥');
             } else {
                 alert('Senha incorreta!');
                 document.getElementById('senha').value = '';
@@ -145,6 +183,7 @@
             document.getElementById('greeting').innerText = `Olá, ${nomeExibicao} ${icone}`;
             
             set(dbRefs[usuarioAtual], 'idle');
+            ultimaVerificacaoEmoji = Date.now(); 
             
             iniciarMonitoramento();
         }
@@ -155,7 +194,6 @@
 
             heartBtn.classList.remove('beating', 'glowing');
 
-            // SITUAÇÃO 1: O Parceiro viu o meu pensamento! (Mensagem atualizada)
             if (meuEstado === 'visto') {
                 statusText.innerHTML = `<b>${nomeExibicaoParceiro} sentiu seu coração enviar e está pensando em você! 🥰✨</b>`;
                 heartBtn.innerText = "💖";
@@ -163,28 +201,49 @@
                 
                 setTimeout(() => {
                     if(meuEstado === 'visto') set(dbRefs[usuarioAtual], 'idle');
-                }, 4500); // Aumentei para 4.5 segundos para dar tempo de ler a mensagem maior
+                }, 4500);
                 return; 
             }
 
-            // SITUAÇÃO 2: O Parceiro está pensando em mim
             if (estadoParceiro === 'pensando') {
                 statusText.innerHTML = `<b>${nomeExibicaoParceiro} está pensando em você!</b><br>Toque 2 vezes para avisar que sentiu.`;
-                heartBtn.innerText = "❤️";
+                heartBtn.innerText = "❤️️";
                 heartBtn.classList.add('beating');
                 return;
             }
 
-            // SITUAÇÃO 3: Eu mandei um pensamento e estou aguardando
             if (meuEstado === 'pensando') {
                 statusText.innerHTML = `Pensamento enviado...<br>Aguardando ${pronomeParceiro} sentir.`;
                 heartBtn.innerText = "❤️";
                 return;
             }
 
-            // SITUAÇÃO 4: Tudo calmo
             statusText.innerHTML = "Tudo calmo por aqui.<br>Toque no coração para enviar um pensamento.";
             heartBtn.innerText = "❤️";
+        }
+
+        // LÓGICA DO CHAT DE EMOJIS
+        window.enviarEmoji = function(emoji) {
+            // Envia para o Firebase com o tempo atual
+            set(emojiRefs[usuarioAtual], { icon: emoji, time: Date.now() });
+            
+            // Cria a animação na sua própria tela imediatamente
+            criarAnimacaoEmoji(emoji);
+        }
+
+        function criarAnimacaoEmoji(emoji) {
+            const el = document.createElement('div');
+            el.innerText = emoji;
+            el.className = 'floating-emoji';
+            
+            // Faz o emoji aparecer em uma posição horizontal levemente aleatória
+            const randomLeft = 40 + Math.random() * 20; 
+            el.style.left = `${randomLeft}%`;
+            
+            document.body.appendChild(el);
+            
+            // Remove o emoji do código depois que a animação acaba (3 segundos)
+            setTimeout(() => el.remove(), 3000);
         }
 
         function iniciarMonitoramento() {
@@ -198,6 +257,16 @@
             onValue(dbRefs[parceiro], (snapshot) => {
                 estadoParceiro = snapshot.val() || 'idle';
                 atualizarTela();
+            });
+
+            // Fica escutando se a Maria mandou um emoji novo
+            onValue(emojiRefs[parceiro], (snapshot) => {
+                const data = snapshot.val();
+                // Só mostra o emoji se ele foi enviado DEPOIS que você abriu a tela
+                if (data && data.time > ultimaVerificacaoEmoji) {
+                    ultimaVerificacaoEmoji = data.time;
+                    criarAnimacaoEmoji(data.icon);
+                }
             });
 
             heartBtn.addEventListener('click', function(e) {

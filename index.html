@@ -53,14 +53,14 @@
     <div id="login-screen" class="container" style="display: flex;">
         <h2>Nosso Espaço</h2>
         <p style="color: #888; font-size: 14px; margin-top: -10px;">Digite sua senha pessoal</p>
-        <input type="password" id="senha" placeholder="Senha numéica" inputmode="numeric">
+        <input type="password" id="senha" placeholder="Senha numérica" inputmode="numeric">
         <button onclick="verificarSenha()">Entrar</button>
     </div>
 
     <!-- TELA 2: O CORAÇÃO -->
     <div id="app-screen" class="container">
         <h3 id="greeting">...</h3>
-        <div id="heart-btn" class="heart">❤️</div>
+        <div id="heart-btn" class="heart">❤️️</div>
         <div id="status" class="status-text">Conectando ao coração...</div>
         <div class="instructions">
             • Toque <b>1 vez</b> no coração para enviar um pensamento<br>
@@ -68,22 +68,21 @@
         </div>
     </div>
 
-    <!-- FIREBASE (Obrigatoriamente via Módulos) -->
+    <!-- FIREBASE -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
-        // ==========================================
-        // COLOQUE SUAS CHAVES DO FIREBASE AQUI
-        // ==========================================
+        // Suas chaves do Firebase
         const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
-            authDomain: "SEU_PROJETO.firebaseapp.com",
-            databaseURL: "https://SEU_PROJETO.firebasedatabase.app",
-            projectId: "SEU_PROJETO",
-            storageBucket: "SEU_PROJETO.appspot.com",
-            messagingSenderId: "SEU_MESSAGING_ID",
-            appId: "SEU_APP_ID"
+            apiKey: "AIzaSyD15BizvlLZEvZPi4VJDOJ-aI7t1lcNQi4",
+            authDomain: "nosso-coracao.firebaseapp.com",
+            databaseURL: "https://nosso-coracao-default-rtdb.firebaseio.com",
+            projectId: "nosso-coracao",
+            storageBucket: "nosso-coracao.firebasestorage.app",
+            messagingSenderId: "560106544356",
+            appId: "1:560106544356:web:25926da1705d98941da0f1",
+            measurementId: "G-C61N75YL2R"
         };
 
         const app = initializeApp(firebaseConfig);

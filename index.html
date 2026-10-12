@@ -3,159 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nosso Coração</title>
+    <!-- Título discreto para não chamar atenção nas abas do navegador -->
+    <title>Portal de Acesso</title>
+    <!-- Fonte moderna e profissional -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        /* Ajuste no body para o teclado do celular não amassar a tela */
+        :root {
+            --bg-color: #0a0a0a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary-red: #ff3b3b;
+            --text-main: #f0f0f0;
+            --text-muted: #888888;
+        }
+
         body {
             margin: 0; padding: 0;
-            background-color: #1a0000;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 0%, #2a0808 0%, #0a0a0a 60%);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
             display: flex; flex-direction: column;
             align-items: center;
-            min-height: 100vh; /* Permite rolar a tela se o teclado abrir */
-            text-align: center;
+            height: 100vh; height: 100dvh; /* Adapta melhor ao mobile */
+            overflow: hidden;
             position: relative;
         }
         
-        /* Container principal flexível */
+        /* Container Principal */
         .container { 
-            display: none; width: 100%; max-width: 400px; 
-            padding: 15px; box-sizing: border-box; z-index: 10;
-            flex-direction: column; flex: 1;
-        }
-        
-        #login-screen { display: flex; justify-content: center; margin-top: 30vh; gap: 15px; }
-        
-        input.senha {
-            padding: 15px; border-radius: 10px; border: none;
-            font-size: 18px; text-align: center; background: #330000; color: white;
-            width: 100%; box-sizing: border-box;
-        }
-        
-        button.btn-entrar {
-            padding: 15px; border-radius: 10px; border: none;
-            background: #ff3333; color: white; font-size: 18px; font-weight: bold;
-            cursor: pointer; transition: 0.2s; width: 100%;
-        }
-        button.btn-entrar:active { transform: scale(0.95); }
-        
-        /* CORAÇÃO E STATUS */
-        .header-area { margin-top: 10px; flex-shrink: 0; }
-        .heart-wrapper { height: 140px; display: flex; align-items: center; justify-content: center; margin: 10px 0; }
-        .heart {
-            font-size: 100px; cursor: pointer; transition: transform 0.2s;
-            user-select: none; -webkit-tap-highlight-color: transparent;
-            filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.2)); line-height: 1;
-        }
-        .heart.beating { animation: pulse 1s infinite alternate; filter: drop-shadow(0 0 30px rgba(255, 50, 0, 0.8)); }
-        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.2); } }
-        
-        .heart.glowing { animation: glow 1.5s infinite alternate; }
-        @keyframes glow {
-            0% { filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.5)); transform: scale(1); }
-            50% { filter: drop-shadow(0 0 40px rgba(255, 105, 180, 1)); transform: scale(1.2); }
-            100% { filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.5)); transform: scale(1); }
+            display: none; width: 100%; max-width: 420px; 
+            height: 100%; padding: 20px; box-sizing: border-box; 
+            flex-direction: column; z-index: 10;
         }
 
-        .status-text { font-size: 16px; min-height: 45px; color: #ff9999; }
+        /* --- TELA DE LOGIN DISCRETA --- */
+        #login-screen { display: flex; justify-content: center; align-items: center; }
+        .login-box {
+            background: var(--glass-bg); backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border); border-radius: 20px;
+            padding: 40px 30px; text-align: center; width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .icon-lock { font-size: 40px; color: var(--text-muted); margin-bottom: 20px; }
+        input.senha {
+            padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border);
+            font-size: 16px; text-align: center; background: rgba(0,0,0,0.3); color: white;
+            width: 100%; box-sizing: border-box; margin-bottom: 20px; letter-spacing: 5px;
+            outline: none; transition: 0.3s;
+        }
+        input.senha:focus { border-color: var(--primary-red); }
+        button.btn-entrar {
+            padding: 15px; border-radius: 12px; border: none;
+            background: var(--primary-red); color: white; font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: 0.2s; width: 100%; letter-spacing: 1px;
+        }
+        button.btn-entrar:active { transform: scale(0.97); }
+
+        /* --- TELA DO APP --- */
+        .header-area { 
+            text-align: center; padding: 10px 0; flex-shrink: 0;
+            background: var(--glass-bg); border-radius: 20px; border: 1px solid var(--glass-border);
+            backdrop-filter: blur(5px); margin-bottom: 15px;
+        }
         
-        /* BARRA DE EMOJIS COMPACTA */
+        .heart-wrapper { height: 130px; display: flex; align-items: center; justify-content: center; margin: 5px 0; }
+        .heart {
+            font-size: 85px; cursor: pointer; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none; -webkit-tap-highlight-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.1)); line-height: 1;
+        }
+        .heart.beating { animation: pulse 1s infinite alternate; filter: drop-shadow(0 0 35px rgba(255, 59, 59, 0.6)); }
+        .heart.glowing { animation: glow 1.5s infinite alternate; }
+
+        @keyframes pulse { 0% { transform: scale(0.95); } 100% { transform: scale(1.15); } }
+        @keyframes glow {
+            0% { filter: drop-shadow(0 0 15px rgba(255, 105, 180, 0.4)); transform: scale(1); }
+            100% { filter: drop-shadow(0 0 50px rgba(255, 105, 180, 0.9)); transform: scale(1.1); }
+        }
+
+        .status-text { font-size: 14px; min-height: 40px; color: #ffb3b3; line-height: 1.4; padding: 0 15px; }
+        .time-badge { font-size: 11px; color: var(--text-muted); display: block; margin-top: 4px; }
+
+        /* --- BARRA DE EMOJIS --- */
         .emoji-bar {
-            display: flex; justify-content: center; gap: 15px;
-            margin: 10px 0; padding: 10px;
-            background: rgba(255, 255, 255, 0.05); border-radius: 20px;
+            display: flex; justify-content: space-evenly; align-items: center;
+            padding: 12px; background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 20px; flex-shrink: 0; margin-bottom: 15px; backdrop-filter: blur(5px);
         }
         .emoji-btn {
-            background: none; border: none; font-size: 26px;
-            padding: 0; cursor: pointer; transition: 0.2s;
-            user-select: none; -webkit-tap-highlight-color: transparent;
+            background: none; border: none; font-size: 24px; padding: 5px;
+            cursor: pointer; transition: 0.2s; user-select: none; -webkit-tap-highlight-color: transparent;
+            filter: grayscale(20%);
         }
-        .emoji-btn:active { transform: scale(0.7); }
+        .emoji-btn:active { transform: scale(0.6); filter: grayscale(0%); }
 
-        /* MINI CHAT (ESTILO WHATSAPP) */
+        /* --- MINI CHAT PROFISSIONAL --- */
         .chat-container {
             flex: 1; display: flex; flex-direction: column;
-            background: rgba(0, 0, 0, 0.3); border-radius: 15px;
-            overflow: hidden; margin-top: 5px;
-            min-height: 200px; /* Garante tamanho no celular */
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 20px; overflow: hidden; backdrop-filter: blur(5px);
+            min-height: 0; /* Essencial para o flexbox funcionar com scroll */
         }
         .messages {
-            flex: 1; overflow-y: auto; padding: 10px;
-            display: flex; flex-direction: column; gap: 8px;
+            flex: 1; overflow-y: auto; padding: 15px;
+            display: flex; flex-direction: column; gap: 12px;
+            scroll-behavior: smooth;
         }
+        /* Custom Scrollbar */
+        .messages::-webkit-scrollbar { width: 4px; }
+        .messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+        .msg-wrapper { display: flex; flex-direction: column; max-width: 80%; }
+        .msg-wrapper.mine { align-self: flex-end; align-items: flex-end; }
+        .msg-wrapper.theirs { align-self: flex-start; align-items: flex-start; }
+
         .msg {
-            padding: 8px 12px; border-radius: 15px; font-size: 14px;
-            max-width: 85%; word-wrap: break-word; text-align: left;
+            padding: 10px 14px; border-radius: 18px; font-size: 14px; word-wrap: break-word; line-height: 1.4;
         }
-        .msg.mine { background: #ff3333; align-self: flex-end; border-bottom-right-radius: 3px; color: white; }
-        .msg.theirs { background: #333333; align-self: flex-start; border-bottom-left-radius: 3px; color: white; }
+        .msg.mine { background: linear-gradient(135deg, #ff3b3b, #cc0000); color: white; border-bottom-right-radius: 4px; }
+        .msg.theirs { background: rgba(255,255,255,0.1); color: #fff; border-bottom-left-radius: 4px; border: 1px solid var(--glass-border); }
         
-        .chat-input-area { display: flex; background: rgba(0,0,0,0.5); padding: 8px; gap: 8px; }
-        .chat-input-area input {
-            flex: 1; padding: 10px 15px; border-radius: 20px; background: #222;
-            color: white; border: none; font-size: 15px; outline: none;
+        .msg-time { font-size: 10px; color: #aaa; margin-top: 3px; padding: 0 4px; }
+
+        .chat-input-area { 
+            display: flex; background: rgba(0,0,0,0.4); padding: 10px; gap: 10px;
+            border-top: 1px solid var(--glass-border);
         }
+        .chat-input-area input {
+            flex: 1; padding: 12px 18px; border-radius: 25px; background: rgba(255,255,255,0.05);
+            color: white; border: 1px solid var(--glass-border); font-size: 15px; outline: none;
+            transition: 0.3s;
+        }
+        .chat-input-area input:focus { background: rgba(255,255,255,0.1); border-color: #555; }
         .chat-input-area button {
-            background: #ff3333; border: none; color: white; border-radius: 50%;
-            width: 40px; height: 40px; cursor: pointer; display: flex;
-            align-items: center; justify-content: center; font-size: 16px;
+            background: var(--primary-red); border: none; color: white; border-radius: 50%;
+            width: 45px; height: 45px; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; font-size: 18px;
+            box-shadow: 0 4px 10px rgba(255, 59, 59, 0.3); transition: 0.2s;
         }
         .chat-input-area button:active { transform: scale(0.9); }
 
         /* Emoji Flutuante */
         .floating-emoji {
-            position: fixed; bottom: 100px;
-            font-size: 40px; pointer-events: none; z-index: 50;
-            animation: floatUp 3s ease-out forwards;
+            position: fixed; bottom: 80px; font-size: 35px; pointer-events: none; z-index: 50;
+            animation: floatUp 3s cubic-bezier(0.25, 1, 0.5, 1) forwards; text-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
         @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-400px) scale(1.5); }
+            0% { opacity: 0; transform: translateY(20px) scale(0.5); }
+            20% { opacity: 1; transform: translateY(0) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-350px) scale(1); }
         }
     </style>
 </head>
 <body>
 
-    <!-- TELA 1: SENHA -->
+    <!-- TELA 1: LOGIN DISCRETO -->
     <div id="login-screen" class="container">
-        <h2>Nosso Espaço</h2>
-        <p style="color: #888; font-size: 14px; margin-top: -10px;">Digite sua senha</p>
-        <input type="password" id="senha" class="senha" placeholder="Senha numérica" inputmode="numeric">
-        <button class="btn-entrar" onclick="verificarSenha()">Entrar</button>
+        <div class="login-box">
+            <div class="icon-lock">🔒</div>
+            <h3 style="margin-top:0; font-weight: 400; color: #ccc;">Acesso Restrito</h3>
+            <input type="password" id="senha" class="senha" placeholder="••••" inputmode="numeric">
+            <button class="btn-entrar" onclick="verificarSenha()">Autenticar</button>
+        </div>
     </div>
 
     <!-- TELA 2: APP PRINCIPAL -->
     <div id="app-screen" class="container">
         
-        <!-- Topo: Saudação, Coração e Status -->
         <div class="header-area">
-            <h3 id="greeting" style="margin: 0;">...</h3>
+            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px;" id="greeting">Conexão Segura</div>
             
             <div class="heart-wrapper">
-                <div id="heart-btn" class="heart">❤️</div>
+                <div id="heart-btn" class="heart">🤍</div>
             </div>
             
-            <div id="status" class="status-text">Conectando...</div>
+            <div id="status" class="status-text">Estabelecendo conexão sincrônica...</div>
         </div>
         
-        <!-- Emojis Rápidos -->
         <div class="emoji-bar">
             <button class="emoji-btn" onclick="enviarEmoji('🥺')">🥺</button>
             <button class="emoji-btn" onclick="enviarEmoji('😍')">😍</button>
-            <button class="emoji-btn" onclick="enviarEmoji('😘')">😘</button>
-            <button class="emoji-btn" onclick="enviarEmoji('💞')">💞</button>
-            <button class="emoji-btn" onclick="enviarEmoji('💘')">💘</button>
-            <button class="emoji-btn" onclick="enviarEmoji('💖')">💖</button>
+            <button class="emoji-btn" onclick="enviarEmoji('💭')">💭</button>
+            <button class="emoji-btn" onclick="enviarEmoji('🍷')">🍷</button>
+            <button class="emoji-btn" onclick="enviarEmoji('🔥')">🔥</button>
+            <button class="emoji-btn" onclick="enviarEmoji('🖤')">🖤</button>
         </div>
 
-        <!-- NOVO: Mini Chat -->
         <div class="chat-container">
             <div id="messages-area" class="messages">
-                <!-- As mensagens aparecerão aqui -->
+                <!-- Mensagens dinâmicas -->
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Digite uma mensagem..." onkeypress="verificarEnter(event)">
+                <input type="text" id="chat-input" placeholder="Mensagem..." onkeypress="verificarEnter(event)">
                 <button onclick="enviarMensagem()">➤</button>
             </div>
         </div>
@@ -165,7 +205,6 @@
     <!-- FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-        // IMPORTANTE: Adicionei o 'push' aqui embaixo
         import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
         const firebaseConfig = {
@@ -186,53 +225,56 @@
         let nomeExibicaoParceiro = "";
         let pronomeParceiro = "";
         
-        let meuEstado = "idle";
-        let estadoParceiro = "idle";
+        let meuEstado = { state: "idle", time: 0 };
+        let estadoParceiro = { state: "idle", time: 0 };
 
         let tapTimeout = null;
         let lastTap = 0;
         let ultimaVerificacaoEmoji = Date.now(); 
 
-        const dbRefs = {
-            kevin: ref(db, 'status/kevin'), 
-            maria: ref(db, 'status/maria') 
-        };
-        const emojiRefs = {
-            kevin: ref(db, 'emoji/kevin'),
-            maria: ref(db, 'emoji/maria')
-        };
-        // Referência do Chat
+        const dbRefs = {};
+        const emojiRefs = {};
         const chatRef = ref(db, 'chat');
+
+        // Formatar Timestamp para HH:MM
+        function formatarHora(timestamp) {
+            if (!timestamp) return "";
+            const data = new Date(timestamp);
+            return data.getHours().toString().padStart(2, '0') + ':' + data.getMinutes().toString().padStart(2, '0');
+        }
 
         window.verificarSenha = function() {
             const senhaDigitada = document.getElementById('senha').value;
 
             if (senhaDigitada === '1509') {
-                usuarioAtual = 'kevin';
-                parceiro = 'maria';
-                nomeExibicaoParceiro = 'A Maria';
-                pronomeParceiro = 'ela';
-                prepararTela('Kevin', '💙');
+                usuarioAtual = 'kevin'; parceiro = 'ana';
+                nomeExibicaoParceiro = 'Ana'; pronomeParceiro = 'ela';
+                prepararTela('Kevin');
             } else if (senhaDigitada === '1507') {
-                usuarioAtual = 'maria';
-                parceiro = 'kevin';
-                nomeExibicaoParceiro = 'O Kevin';
-                pronomeParceiro = 'ele';
-                prepararTela('Maria', '🔥');
+                usuarioAtual = 'ana'; parceiro = 'kevin';
+                nomeExibicaoParceiro = 'Kevin'; pronomeParceiro = 'ele';
+                prepararTela('Ana');
             } else {
-                alert('Senha incorreta!');
+                document.getElementById('senha').style.borderColor = 'red';
                 document.getElementById('senha').value = '';
+                setTimeout(() => document.getElementById('senha').style.borderColor = 'var(--glass-border)', 1000);
             }
         }
 
-        function prepararTela(nomeExibicao, icone) {
+        function prepararTela(nomeExibicao) {
+            dbRefs.kevin = ref(db, 'status_v2/kevin');
+            dbRefs.ana = ref(db, 'status_v2/ana');
+            emojiRefs.kevin = ref(db, 'emoji/kevin');
+            emojiRefs.ana = ref(db, 'emoji/ana');
+
             document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-screen').style.display = 'flex'; // Mudou para flex
-            document.getElementById('greeting').innerText = `Olá, ${nomeExibicao} ${icone}`;
+            document.getElementById('app-screen').style.display = 'flex';
             
-            set(dbRefs[usuarioAtual], 'idle');
+            // Título super discreto no topo
+            document.getElementById('greeting').innerText = `Conectado: ${nomeExibicao}`;
+            
+            set(dbRefs[usuarioAtual], { state: 'idle', time: Date.now() });
             ultimaVerificacaoEmoji = Date.now(); 
-            
             iniciarMonitoramento();
         }
 
@@ -242,32 +284,42 @@
 
             heartBtn.classList.remove('beating', 'glowing');
 
-            if (meuEstado === 'visto') {
-                statusText.innerHTML = `<b>${nomeExibicaoParceiro} sentiu seu coração<br>enviar e está pensando em você! 🥰✨</b>`;
-                heartBtn.innerText = "💖";
+            // Parsing seguro caso os dados do DB sejam antigos
+            const sMeu = typeof meuEstado === 'string' ? meuEstado : (meuEstado?.state || 'idle');
+            const sParceiro = typeof estadoParceiro === 'string' ? estadoParceiro : (estadoParceiro?.state || 'idle');
+            
+            const horaParceiro = estadoParceiro?.time ? formatarHora(estadoParceiro.time) : '';
+            const horaMinha = meuEstado?.time ? formatarHora(meuEstado.time) : formatarHora(Date.now());
+
+            if (sMeu === 'visto') {
+                statusText.innerHTML = `<b style="color: #fff;">${nomeExibicaoParceiro} sentiu seu coração ❤️</b><span class="time-badge">Conexão estabelecida às ${horaMinha}</span>`;
+                heartBtn.innerText = "❤️‍🔥";
                 heartBtn.classList.add('glowing');
                 
                 setTimeout(() => {
-                    if(meuEstado === 'visto') set(dbRefs[usuarioAtual], 'idle');
-                }, 4500);
+                    // Garante que só reseta se ainda estiver no estado 'visto'
+                    if((typeof meuEstado === 'string' ? meuEstado : meuEstado.state) === 'visto') {
+                        set(dbRefs[usuarioAtual], { state: 'idle', time: Date.now() });
+                    }
+                }, 5000);
                 return; 
             }
 
-            if (estadoParceiro === 'pensando') {
-                statusText.innerHTML = `<b>${nomeExibicaoParceiro} está pensando em você!</b><br><span style="font-size:14px; color:#888;">Toque 2 vezes para avisar que sentiu.</span>`;
+            if (sParceiro === 'pensando') {
+                statusText.innerHTML = `<b style="color: white;">${nomeExibicaoParceiro} está pensando em você!</b><span class="time-badge">Enviado às ${horaParceiro} • Toque 2x para avisar que sentiu</span>`;
                 heartBtn.innerText = "❤️";
                 heartBtn.classList.add('beating');
                 return;
             }
 
-            if (meuEstado === 'pensando') {
-                statusText.innerHTML = `Pensamento enviado...<br><span style="font-size:14px; color:#888;">Aguardando ${pronomeParceiro} sentir.</span>`;
+            if (sMeu === 'pensando') {
+                statusText.innerHTML = `<span style="color:#aaa;">Pensamento enviado para ${nomeExibicaoParceiro}...</span><span class="time-badge">Enviado às ${horaMinha} • Aguardando resposta</span>`;
                 heartBtn.innerText = "❤️";
                 return;
             }
 
-            statusText.innerHTML = `Tudo calmo por aqui.<br><span style="font-size:14px; color:#888;">Toque 1x para enviar pensamento, 2x para visualizar.</span>`;
-            heartBtn.innerText = "❤️";
+            statusText.innerHTML = `<span style="color:#666;">Frequência estabilizada.</span><span class="time-badge">Toque 1x p/ enviar saudade • 2x p/ receber</span>`;
+            heartBtn.innerText = "🤍"; // Coração branco/discreto quando inativo
         }
 
         window.enviarEmoji = function(emoji) {
@@ -279,47 +331,35 @@
             const el = document.createElement('div');
             el.innerText = emoji;
             el.className = 'floating-emoji';
-            
-            const randomLeft = 30 + Math.random() * 40; 
+            const randomLeft = 20 + Math.random() * 60; 
             el.style.left = `${randomLeft}%`;
-            
             document.body.appendChild(el);
             setTimeout(() => el.remove(), 3000);
         }
 
-        // --- LÓGICA DO CHAT ---
         window.enviarMensagem = function() {
             const input = document.getElementById('chat-input');
             const texto = input.value.trim();
-            
             if (texto !== "") {
-                // Cria uma nova mensagem no banco
-                push(chatRef, {
-                    sender: usuarioAtual,
-                    texto: texto,
-                    timestamp: Date.now()
-                });
-                input.value = ""; // Limpa o campo
+                push(chatRef, { sender: usuarioAtual, texto: texto, timestamp: Date.now() });
+                input.value = ""; 
             }
         }
 
-        // Permite enviar apertando a tecla Enter no celular/pc
         window.verificarEnter = function(event) {
-            if (event.key === "Enter") {
-                enviarMensagem();
-            }
+            if (event.key === "Enter") enviarMensagem();
         }
 
         function iniciarMonitoramento() {
             const heartBtn = document.getElementById('heart-btn');
 
             onValue(dbRefs[usuarioAtual], (snapshot) => {
-                meuEstado = snapshot.val() || 'idle';
+                meuEstado = snapshot.val() || { state: 'idle', time: Date.now() };
                 atualizarTela();
             });
 
             onValue(dbRefs[parceiro], (snapshot) => {
-                estadoParceiro = snapshot.val() || 'idle';
+                estadoParceiro = snapshot.val() || { state: 'idle', time: Date.now() };
                 atualizarTela();
             });
 
@@ -331,46 +371,64 @@
                 }
             });
 
-            // Carrega e atualiza o Chat em tempo real
             onValue(chatRef, (snapshot) => {
                 const messagesArea = document.getElementById('messages-area');
-                messagesArea.innerHTML = ""; // Limpa a tela para recarregar as mensagens
+                
+                // Salvar estado do scroll antes de atualizar
+                const isScrolledToBottom = messagesArea.scrollHeight - messagesArea.clientHeight <= messagesArea.scrollTop + 10;
+                
+                messagesArea.innerHTML = ""; 
                 
                 snapshot.forEach((childSnapshot) => {
                     const msg = childSnapshot.val();
-                    const div = document.createElement('div');
+                    const isMine = msg.sender === usuarioAtual;
                     
-                    // Verifica se fui eu que mandei ou a Maria
-                    div.className = 'msg ' + (msg.sender === usuarioAtual ? 'mine' : 'theirs');
-                    div.innerText = msg.texto;
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'msg-wrapper ' + (isMine ? 'mine' : 'theirs');
                     
-                    messagesArea.appendChild(div);
+                    const msgBubble = document.createElement('div');
+                    msgBubble.className = 'msg ' + (isMine ? 'mine' : 'theirs');
+                    msgBubble.innerText = msg.texto;
+                    
+                    const timeLabel = document.createElement('div');
+                    timeLabel.className = 'msg-time';
+                    timeLabel.innerText = formatarHora(msg.timestamp);
+
+                    wrapper.appendChild(msgBubble);
+                    wrapper.appendChild(timeLabel);
+                    messagesArea.appendChild(wrapper);
                 });
                 
-                // Rola o chat automaticamente para o final
-                messagesArea.scrollTop = messagesArea.scrollHeight;
+                // Rolar para baixo automaticamente apenas se já estava em baixo ou se a msg foi minha
+                setTimeout(() => {
+                    messagesArea.scrollTop = messagesArea.scrollHeight;
+                }, 50);
             });
 
-            // Clique no Coração
             heartBtn.addEventListener('click', function(e) {
                 let currentTime = new Date().getTime();
                 let tapLength = currentTime - lastTap;
                 
-                if (tapLength < 500 && tapLength > 0) {
+                const sParceiro = typeof estadoParceiro === 'string' ? estadoParceiro : estadoParceiro?.state;
+                const sMeu = typeof meuEstado === 'string' ? meuEstado : meuEstado?.state;
+
+                if (tapLength < 400 && tapLength > 0) {
+                    // DUPLO CLIQUE
                     clearTimeout(tapTimeout);
-                    if (estadoParceiro === 'pensando') {
-                        set(dbRefs[parceiro], 'visto');
+                    if (sParceiro === 'pensando') {
+                        set(dbRefs[parceiro], { state: 'visto', time: Date.now() });
                         heartBtn.innerText = "✨";
-                        setTimeout(() => heartBtn.innerText = "❤️", 500);
+                        setTimeout(() => atualizarTela(), 600);
                     }
                 } else {
+                    // UM CLIQUE
                     tapTimeout = setTimeout(function() {
-                        if (meuEstado !== 'pensando' && meuEstado !== 'visto') {
-                            set(dbRefs[usuarioAtual], 'pensando');
+                        if (sMeu !== 'pensando' && sMeu !== 'visto') {
+                            set(dbRefs[usuarioAtual], { state: 'pensando', time: Date.now() });
                             heartBtn.style.transform = "scale(0.8)";
                             setTimeout(() => heartBtn.style.transform = "scale(1)", 150);
                         }
-                    }, 500);
+                    }, 400);
                 }
                 lastTap = currentTime;
             });

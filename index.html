@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- Título discreto para não chamar atenção nas abas do navegador -->
+    <!-- Título discreto -->
     <title>Portal de Acesso</title>
-    <!-- Fonte moderna e profissional -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -25,12 +24,11 @@
             font-family: 'Inter', sans-serif;
             display: flex; flex-direction: column;
             align-items: center;
-            height: 100vh; height: 100dvh; /* Adapta melhor ao mobile */
+            height: 100vh; height: 100dvh;
             overflow: hidden;
             position: relative;
         }
         
-        /* Container Principal */
         .container { 
             display: none; width: 100%; max-width: 420px; 
             height: 100%; padding: 20px; box-sizing: border-box; 
@@ -94,23 +92,21 @@
         .emoji-btn {
             background: none; border: none; font-size: 24px; padding: 5px;
             cursor: pointer; transition: 0.2s; user-select: none; -webkit-tap-highlight-color: transparent;
-            filter: grayscale(20%);
         }
-        .emoji-btn:active { transform: scale(0.6); filter: grayscale(0%); }
+        .emoji-btn:active { transform: scale(0.6); }
 
         /* --- MINI CHAT PROFISSIONAL --- */
         .chat-container {
             flex: 1; display: flex; flex-direction: column;
             background: var(--glass-bg); border: 1px solid var(--glass-border);
             border-radius: 20px; overflow: hidden; backdrop-filter: blur(5px);
-            min-height: 0; /* Essencial para o flexbox funcionar com scroll */
+            min-height: 0; 
         }
         .messages {
             flex: 1; overflow-y: auto; padding: 15px;
             display: flex; flex-direction: column; gap: 12px;
             scroll-behavior: smooth;
         }
-        /* Custom Scrollbar */
         .messages::-webkit-scrollbar { width: 4px; }
         .messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
 
@@ -124,25 +120,34 @@
         .msg.mine { background: linear-gradient(135deg, #ff3b3b, #cc0000); color: white; border-bottom-right-radius: 4px; }
         .msg.theirs { background: rgba(255,255,255,0.1); color: #fff; border-bottom-left-radius: 4px; border: 1px solid var(--glass-border); }
         
+        /* Estilo para imagens no chat */
+        .msg img {
+            max-width: 100%; border-radius: 12px; margin-top: 2px;
+            cursor: pointer; border: 1px solid rgba(255,255,255,0.1);
+        }
+
         .msg-time { font-size: 10px; color: #aaa; margin-top: 3px; padding: 0 4px; }
 
         .chat-input-area { 
-            display: flex; background: rgba(0,0,0,0.4); padding: 10px; gap: 10px;
-            border-top: 1px solid var(--glass-border);
+            display: flex; background: rgba(0,0,0,0.4); padding: 10px; gap: 8px;
+            border-top: 1px solid var(--glass-border); align-items: center;
         }
-        .chat-input-area input {
-            flex: 1; padding: 12px 18px; border-radius: 25px; background: rgba(255,255,255,0.05);
+        .chat-input-area input[type="text"] {
+            flex: 1; padding: 12px 15px; border-radius: 25px; background: rgba(255,255,255,0.05);
             color: white; border: 1px solid var(--glass-border); font-size: 15px; outline: none;
             transition: 0.3s;
         }
-        .chat-input-area input:focus { background: rgba(255,255,255,0.1); border-color: #555; }
-        .chat-input-area button {
-            background: var(--primary-red); border: none; color: white; border-radius: 50%;
-            width: 45px; height: 45px; cursor: pointer; display: flex;
-            align-items: center; justify-content: center; font-size: 18px;
-            box-shadow: 0 4px 10px rgba(255, 59, 59, 0.3); transition: 0.2s;
+        .chat-input-area input[type="text"]:focus { background: rgba(255,255,255,0.1); border-color: #555; }
+        
+        .btn-action {
+            border: none; border-radius: 50%; width: 42px; height: 42px; cursor: pointer; 
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
+            transition: 0.2s;
         }
-        .chat-input-area button:active { transform: scale(0.9); }
+        .btn-attach { background: rgba(255,255,255,0.1); color: #ccc; }
+        .btn-attach:active { background: rgba(255,255,255,0.3); }
+        .btn-send { background: var(--primary-red); color: white; box-shadow: 0 4px 10px rgba(255, 59, 59, 0.3); }
+        .btn-send:active { transform: scale(0.9); }
 
         /* Emoji Flutuante */
         .floating-emoji {
@@ -154,9 +159,23 @@
             20% { opacity: 1; transform: translateY(0) scale(1.2); }
             100% { opacity: 0; transform: translateY(-350px) scale(1); }
         }
+
+        /* Visualizador de Imagem em Tela Cheia */
+        #image-viewer {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 9999; justify-content: center; align-items: center;
+        }
+        #image-viewer img { max-width: 95%; max-height: 90%; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
+        .fechar-img { position: absolute; top: 20px; right: 25px; color: white; font-size: 35px; cursor: pointer; user-select: none; }
     </style>
 </head>
 <body>
+
+    <!-- Visualizador de Imagem -->
+    <div id="image-viewer">
+        <span class="fechar-img" onclick="fecharImagem()">×</span>
+        <img id="fullscreen-img" src="">
+    </div>
 
     <!-- TELA 1: LOGIN DISCRETO -->
     <div id="login-screen" class="container">
@@ -181,13 +200,14 @@
             <div id="status" class="status-text">Estabelecendo conexão sincrônica...</div>
         </div>
         
+        <!-- Emojis Originais -->
         <div class="emoji-bar">
             <button class="emoji-btn" onclick="enviarEmoji('🥺')">🥺</button>
             <button class="emoji-btn" onclick="enviarEmoji('😍')">😍</button>
-            <button class="emoji-btn" onclick="enviarEmoji('💭')">💭</button>
-            <button class="emoji-btn" onclick="enviarEmoji('🍷')">🍷</button>
-            <button class="emoji-btn" onclick="enviarEmoji('🔥')">🔥</button>
-            <button class="emoji-btn" onclick="enviarEmoji('🖤')">🖤</button>
+            <button class="emoji-btn" onclick="enviarEmoji('😘')">😘</button>
+            <button class="emoji-btn" onclick="enviarEmoji('💞')">💞</button>
+            <button class="emoji-btn" onclick="enviarEmoji('💘')">💘</button>
+            <button class="emoji-btn" onclick="enviarEmoji('💖')">💖</button>
         </div>
 
         <div class="chat-container">
@@ -195,8 +215,12 @@
                 <!-- Mensagens dinâmicas -->
             </div>
             <div class="chat-input-area">
+                <!-- Botão de Anexo (Câmera/Galeria) -->
+                <button class="btn-action btn-attach" onclick="document.getElementById('file-input').click()">📷</button>
+                <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="processarImagem(event)">
+                
                 <input type="text" id="chat-input" placeholder="Mensagem..." onkeypress="verificarEnter(event)">
-                <button onclick="enviarMensagem()">➤</button>
+                <button class="btn-action btn-send" onclick="enviarMensagem()">➤</button>
             </div>
         </div>
 
@@ -223,7 +247,6 @@
         let usuarioAtual = "";
         let parceiro = "";
         let nomeExibicaoParceiro = "";
-        let pronomeParceiro = "";
         
         let meuEstado = { state: "idle", time: 0 };
         let estadoParceiro = { state: "idle", time: 0 };
@@ -236,11 +259,20 @@
         const emojiRefs = {};
         const chatRef = ref(db, 'chat');
 
-        // Formatar Timestamp para HH:MM
         function formatarHora(timestamp) {
             if (!timestamp) return "";
             const data = new Date(timestamp);
             return data.getHours().toString().padStart(2, '0') + ':' + data.getMinutes().toString().padStart(2, '0');
+        }
+
+        // Funções para ver fotos em tela cheia
+        window.abrirImagem = function(src) {
+            document.getElementById('fullscreen-img').src = src;
+            document.getElementById('image-viewer').style.display = 'flex';
+        }
+        window.fecharImagem = function() {
+            document.getElementById('image-viewer').style.display = 'none';
+            document.getElementById('fullscreen-img').src = '';
         }
 
         window.verificarSenha = function() {
@@ -248,11 +280,11 @@
 
             if (senhaDigitada === '1509') {
                 usuarioAtual = 'kevin'; parceiro = 'ana';
-                nomeExibicaoParceiro = 'Ana'; pronomeParceiro = 'ela';
+                nomeExibicaoParceiro = 'Ana';
                 prepararTela('Kevin');
             } else if (senhaDigitada === '1507') {
                 usuarioAtual = 'ana'; parceiro = 'kevin';
-                nomeExibicaoParceiro = 'Kevin'; pronomeParceiro = 'ele';
+                nomeExibicaoParceiro = 'Kevin';
                 prepararTela('Ana');
             } else {
                 document.getElementById('senha').style.borderColor = 'red';
@@ -270,7 +302,6 @@
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-screen').style.display = 'flex';
             
-            // Título super discreto no topo
             document.getElementById('greeting').innerText = `Conectado: ${nomeExibicao}`;
             
             set(dbRefs[usuarioAtual], { state: 'idle', time: Date.now() });
@@ -281,13 +312,10 @@
         function atualizarTela() {
             const heartBtn = document.getElementById('heart-btn');
             const statusText = document.getElementById('status');
-
             heartBtn.classList.remove('beating', 'glowing');
 
-            // Parsing seguro caso os dados do DB sejam antigos
             const sMeu = typeof meuEstado === 'string' ? meuEstado : (meuEstado?.state || 'idle');
             const sParceiro = typeof estadoParceiro === 'string' ? estadoParceiro : (estadoParceiro?.state || 'idle');
-            
             const horaParceiro = estadoParceiro?.time ? formatarHora(estadoParceiro.time) : '';
             const horaMinha = meuEstado?.time ? formatarHora(meuEstado.time) : formatarHora(Date.now());
 
@@ -295,9 +323,7 @@
                 statusText.innerHTML = `<b style="color: #fff;">${nomeExibicaoParceiro} sentiu seu coração ❤️</b><span class="time-badge">Conexão estabelecida às ${horaMinha}</span>`;
                 heartBtn.innerText = "❤️‍🔥";
                 heartBtn.classList.add('glowing');
-                
                 setTimeout(() => {
-                    // Garante que só reseta se ainda estiver no estado 'visto'
                     if((typeof meuEstado === 'string' ? meuEstado : meuEstado.state) === 'visto') {
                         set(dbRefs[usuarioAtual], { state: 'idle', time: Date.now() });
                     }
@@ -319,7 +345,7 @@
             }
 
             statusText.innerHTML = `<span style="color:#666;">Frequência estabilizada.</span><span class="time-badge">Toque 1x p/ enviar saudade • 2x p/ receber</span>`;
-            heartBtn.innerText = "🤍"; // Coração branco/discreto quando inativo
+            heartBtn.innerText = "🤍"; 
         }
 
         window.enviarEmoji = function(emoji) {
@@ -337,11 +363,59 @@
             setTimeout(() => el.remove(), 3000);
         }
 
+        // NOVO: Função para processar e comprimir imagem antes de enviar
+        window.processarImagem = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800; // Redimensiona para não pesar o banco
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    } else {
+                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Converte para Base64 leve
+                    const base64Img = canvas.toDataURL('image/jpeg', 0.6); 
+                    
+                    // Envia para o Firebase
+                    push(chatRef, {
+                        sender: usuarioAtual,
+                        tipo: 'imagem',
+                        conteudo: base64Img,
+                        timestamp: Date.now()
+                    });
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            event.target.value = ''; // Limpa o input
+        }
+
         window.enviarMensagem = function() {
             const input = document.getElementById('chat-input');
             const texto = input.value.trim();
             if (texto !== "") {
-                push(chatRef, { sender: usuarioAtual, texto: texto, timestamp: Date.now() });
+                push(chatRef, { 
+                    sender: usuarioAtual, 
+                    tipo: 'texto', 
+                    conteudo: texto, 
+                    timestamp: Date.now() 
+                });
                 input.value = ""; 
             }
         }
@@ -357,12 +431,10 @@
                 meuEstado = snapshot.val() || { state: 'idle', time: Date.now() };
                 atualizarTela();
             });
-
             onValue(dbRefs[parceiro], (snapshot) => {
                 estadoParceiro = snapshot.val() || { state: 'idle', time: Date.now() };
                 atualizarTela();
             });
-
             onValue(emojiRefs[parceiro], (snapshot) => {
                 const data = snapshot.val();
                 if (data && data.time > ultimaVerificacaoEmoji) {
@@ -373,22 +445,28 @@
 
             onValue(chatRef, (snapshot) => {
                 const messagesArea = document.getElementById('messages-area');
-                
-                // Salvar estado do scroll antes de atualizar
-                const isScrolledToBottom = messagesArea.scrollHeight - messagesArea.clientHeight <= messagesArea.scrollTop + 10;
-                
                 messagesArea.innerHTML = ""; 
                 
                 snapshot.forEach((childSnapshot) => {
                     const msg = childSnapshot.val();
+                    // Compatibilidade com msgs antigas que não tinham 'tipo'
+                    const tipoMsg = msg.tipo || 'texto'; 
+                    const conteudoMsg = msg.conteudo || msg.texto; 
+
                     const isMine = msg.sender === usuarioAtual;
-                    
                     const wrapper = document.createElement('div');
                     wrapper.className = 'msg-wrapper ' + (isMine ? 'mine' : 'theirs');
                     
                     const msgBubble = document.createElement('div');
                     msgBubble.className = 'msg ' + (isMine ? 'mine' : 'theirs');
-                    msgBubble.innerText = msg.texto;
+                    
+                    if (tipoMsg === 'imagem') {
+                        msgBubble.style.background = 'transparent';
+                        msgBubble.style.padding = '0';
+                        msgBubble.innerHTML = `<img src="${conteudoMsg}" onclick="abrirImagem(this.src)">`;
+                    } else {
+                        msgBubble.innerText = conteudoMsg;
+                    }
                     
                     const timeLabel = document.createElement('div');
                     timeLabel.className = 'msg-time';
@@ -399,21 +477,16 @@
                     messagesArea.appendChild(wrapper);
                 });
                 
-                // Rolar para baixo automaticamente apenas se já estava em baixo ou se a msg foi minha
-                setTimeout(() => {
-                    messagesArea.scrollTop = messagesArea.scrollHeight;
-                }, 50);
+                setTimeout(() => messagesArea.scrollTop = messagesArea.scrollHeight, 50);
             });
 
             heartBtn.addEventListener('click', function(e) {
                 let currentTime = new Date().getTime();
                 let tapLength = currentTime - lastTap;
-                
                 const sParceiro = typeof estadoParceiro === 'string' ? estadoParceiro : estadoParceiro?.state;
                 const sMeu = typeof meuEstado === 'string' ? meuEstado : meuEstado?.state;
 
                 if (tapLength < 400 && tapLength > 0) {
-                    // DUPLO CLIQUE
                     clearTimeout(tapTimeout);
                     if (sParceiro === 'pensando') {
                         set(dbRefs[parceiro], { state: 'visto', time: Date.now() });
@@ -421,7 +494,6 @@
                         setTimeout(() => atualizarTela(), 600);
                     }
                 } else {
-                    // UM CLIQUE
                     tapTimeout = setTimeout(function() {
                         if (sMeu !== 'pensando' && sMeu !== 'visto') {
                             set(dbRefs[usuarioAtual], { state: 'pensando', time: Date.now() });

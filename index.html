@@ -128,7 +128,7 @@
 
         .chat-input-area {
             display: flex; background: var(--bg-dark); padding: 10px 15px; gap: 10px;
-            border-top: 1px solid var(--glass-border); align-items: center; padding-bottom: 20px; /* Safe area */
+            border-top: 1px solid var(--glass-border); align-items: center; padding-bottom: 20px;
         }
         .chat-input-area input[type="text"] {
             flex: 1; padding: 14px 18px; border-radius: 24px; background: var(--bg-panel);
@@ -240,7 +240,8 @@
             </div>
             <div class="chat-input-area">
                 <button class="btn-action btn-attach" onclick="abrirAnexo('chat')"><i class="fa-solid fa-camera"></i></button>
-               <input type="text" id="input-chat" placeholder="Digite uma mensagem..." onkeypress="verificarEnter(event, 'chat')">
+                <!-- O id aqui foi corrigido para input-chat -->
+                <input type="text" id="input-chat" placeholder="Digite uma mensagem..." onkeypress="verificarEnter(event, 'chat')">
                 <button class="btn-action btn-send" onclick="enviarMensagem('chat')"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </div>
@@ -301,11 +302,11 @@
         let meuEstado = { state: "idle", time: 0, online: false };
         let estadoParceiro = { state: "idle", time: 0, online: false, last_seen: 0 };
         
-        let msgEmResposta = null; // Armazena a mensagem sendo respondida
+        let msgEmResposta = null; 
         let abaAtual = 'sintonia';
 
-        // Refs de chat
-        const chatRef = ref(db, 'chat_v2');
+        // Refs de chat restauradas para a conversa original
+        const chatRef = ref(db, 'chat');
         const secretoRef = ref(db, 'chat_secreto');
 
         // Formatação de hora
@@ -374,16 +375,18 @@
             carregarChat(secretoRef, 'messages-secreto');
         }
 
+        // Lógica de presença corrigida para não limpar o coração
         function configurarPresenca() {
             const connectedRef = ref(db, ".info/connected");
             onValue(connectedRef, (snap) => {
                 if (snap.val() === true) {
                     onDisconnect(dbRefs.meu).update({ online: false, last_seen: serverTimestamp() });
-                    update(dbRefs.meu, { online: true, state: 'idle' });
+                    update(dbRefs.meu, { online: true }); 
                 }
             });
         }
 
+        // Lógica do coração reescrita para persistência
         function atualizarHeaderESintonia() {
             const statusEl = document.getElementById('partner-status');
             const heartBtn = document.getElementById('heart-btn');
@@ -399,24 +402,31 @@
             }
 
             // Sintonia Logic
+            if (meuEstado.state === 'visto') {
+                heartBtn.innerText = "❤️‍🔥"; heartBtn.classList.add('connected');
+                sintText.innerHTML = `<strong>${nomeExibicaoParceiro} sentiu seu coração 💞</strong>Conexão estabelecida!`;
+                setTimeout(() => update(dbRefs.meu, { state: 'idle' }), 4000);
+                return;
+            }
+
+            if (estadoParceiro.state === 'pensando') {
+                heartBtn.innerText = "❤️"; heartBtn.classList.add('beating');
+                sintText.innerHTML = `<strong>${nomeExibicaoParceiro} deixou um coração para você!</strong>Toque 2x para avisar que sentiu.`;
+                return;
+            }
+
+            if (meuEstado.state === 'pensando') {
+                heartBtn.innerText = "❤️";
+                sintText.innerHTML = `<strong>Coração enviado...</strong>Aguardando ${nomeExibicaoParceiro} abrir o app e sentir.`;
+                return;
+            }
+
             if (meuEstado.online && estadoParceiro.online) {
-                if (estadoParceiro.state === 'pensando') {
-                    heartBtn.innerText = "❤️"; heartBtn.classList.add('beating');
-                    sintText.innerHTML = `<strong>${nomeExibicaoParceiro} está pensando em você!</strong>Toque 2x para avisar que sentiu.`;
-                } else if (meuEstado.state === 'visto') {
-                    heartBtn.innerText = "❤️‍🔥"; heartBtn.classList.add('connected');
-                    sintText.innerHTML = `<strong>${nomeExibicaoParceiro} sentiu seu coração 💞</strong>Conexão estabelecida!`;
-                    setTimeout(() => update(dbRefs.meu, { state: 'idle' }), 4000);
-                } else if (meuEstado.state === 'pensando') {
-                    heartBtn.innerText = "❤️";
-                    sintText.innerHTML = `<strong>Pensamento enviado...</strong>Aguardando ${nomeExibicaoParceiro} sentir.`;
-                } else {
-                    heartBtn.innerText = "💞"; heartBtn.classList.add('connected');
-                    sintText.innerHTML = `<strong>Corações Conectados</strong>Ambos estão online no espaço de vocês.`;
-                }
+                heartBtn.innerText = "💞"; heartBtn.classList.add('connected');
+                sintText.innerHTML = `<strong>Corações Conectados</strong>Ambos estão online agora.`;
             } else {
                 heartBtn.innerText = "🤍";
-                sintText.innerHTML = `<strong>Aguardando Conexão</strong>${nomeExibicaoParceiro} não está no app agora.<br>Toque 1x para deixar uma notificação de saudade.`;
+                sintText.innerHTML = `<strong>Modo de Espera</strong>${nomeExibicaoParceiro} está offline agora.<br>Toque 1x para deixar um coração para quando ela entrar.`;
             }
         }
 
@@ -426,7 +436,7 @@
             const isSec = abaAtual === 'secreto';
             document.getElementById(isSec ? 'reply-box-sec' : 'reply-box').style.display = 'flex';
             document.getElementById(isSec ? 'reply-text-sec' : 'reply-text').innerText = "Respondendo: " + texto;
-            document.getElementById(isSec ? 'input-secreto' : 'input-normal').focus();
+            document.getElementById(isSec ? 'input-secreto' : 'input-chat').focus();
         }
 
         window.cancelarResposta = () => {
@@ -499,7 +509,6 @@
                     
                     const msgBox = document.createElement('div');
                     msgBox.className = 'msg-box';
-                    // Clicar na mensagem ativa o modo de resposta
                     if(msg.tipo === 'texto') {
                         msgBox.onclick = () => prepararResposta(msg.conteudo);
                     }

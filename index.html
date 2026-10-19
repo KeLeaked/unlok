@@ -87,12 +87,18 @@
             user-select: none; -webkit-tap-highlight-color: transparent; filter: drop-shadow(0 0 20px rgba(255, 42, 75, 0.2));
         }
         .heart.beating { animation: pulse 1s infinite alternate; filter: drop-shadow(0 0 40px rgba(255, 42, 75, 0.6)); }
-        .heart.connected { animation: glowPulse 1.5s infinite alternate; }
+        
+        /* Efeito visual especial para o coração de fogo 🔥 */
+        .heart.connected { animation: fireGlow 1.2s infinite alternate; }
+
         .sintonia-text { margin-top: 30px; text-align: center; color: var(--text-muted); font-size: 14px; line-height: 1.5; }
         .sintonia-text strong { color: white; display: block; margin-bottom: 5px; font-size: 16px; }
 
         @keyframes pulse { 0% { transform: scale(0.9); } 100% { transform: scale(1.15); } }
-        @keyframes glowPulse { 0% { filter: drop-shadow(0 0 20px rgba(255, 42, 75, 0.5)); transform: scale(1); } 100% { filter: drop-shadow(0 0 60px rgba(255, 42, 75, 1)); transform: scale(1.1); } }
+        @keyframes fireGlow { 
+            0% { filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.5)); transform: scale(1); } 
+            100% { filter: drop-shadow(0 0 60px rgba(255, 50, 0, 1)); transform: scale(1.15); } 
+        }
 
         /* --- VIEW: CHAT --- */
         .messages {
@@ -185,7 +191,6 @@
 </head>
 <body>
 
-    <!-- VISUALIZADOR DE IMAGEM -->
     <div id="image-viewer">
         <span class="fechar-img" onclick="fecharImagem()">&times;</span>
         <img id="fullscreen-img" src="">
@@ -218,8 +223,7 @@
                 <div id="heart-btn" class="heart">🤍</div>
             </div>
             <div class="sintonia-text" id="sintonia-status">
-                <strong>Frequência Estabilizada</strong>
-                Toque 1x para enviar saudade<br>2x para avisar que sentiu
+                <strong>Verificando frequência...</strong>
             </div>
         </div>
 
@@ -240,7 +244,6 @@
             </div>
             <div class="chat-input-area">
                 <button class="btn-action btn-attach" onclick="abrirAnexo('chat')"><i class="fa-solid fa-camera"></i></button>
-                <!-- O id aqui foi corrigido para input-chat -->
                 <input type="text" id="input-chat" placeholder="Digite uma mensagem..." onkeypress="verificarEnter(event, 'chat')">
                 <button class="btn-action btn-send" onclick="enviarMensagem('chat')"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
@@ -265,7 +268,7 @@
             </div>
         </div>
 
-        <!-- INPUTS DE ARQUIVO ESCONDIDOS -->
+        <!-- INPUTS DE ARQUIVO -->
         <input type="file" id="file-chat" accept="image/*" style="display: none;" onchange="processarImagem(event, 'chat')">
         <input type="file" id="file-secreto" accept="image/*" style="display: none;" onchange="processarImagem(event, 'secreto')">
 
@@ -375,7 +378,6 @@
             carregarChat(secretoRef, 'messages-secreto');
         }
 
-        // Lógica de presença corrigida para não limpar o coração
         function configurarPresenca() {
             const connectedRef = ref(db, ".info/connected");
             onValue(connectedRef, (snap) => {
@@ -386,7 +388,7 @@
             });
         }
 
-        // Lógica do coração reescrita para persistência
+        // --- NOVA LÓGICA DO CORAÇÃO ---
         function atualizarHeaderESintonia() {
             const statusEl = document.getElementById('partner-status');
             const heartBtn = document.getElementById('heart-btn');
@@ -394,40 +396,46 @@
             
             heartBtn.classList.remove('beating', 'connected');
 
-            // Header Status (Online / Last Seen)
+            // 1. Mostrar status no topo (Online / Visto por último)
             if (estadoParceiro.online) {
                 statusEl.innerHTML = `<span class="status-online">Online</span>`;
             } else {
                 statusEl.innerText = estadoParceiro.last_seen ? `Visto por último ${formatarDataHora(estadoParceiro.last_seen)}` : "Offline";
             }
 
-            // Sintonia Logic
+            // 2. Você viu e avisou (Confirmação)
             if (meuEstado.state === 'visto') {
                 heartBtn.innerText = "❤️‍🔥"; heartBtn.classList.add('connected');
-                sintText.innerHTML = `<strong>${nomeExibicaoParceiro} sentiu seu coração 💞</strong>Conexão estabelecida!`;
-                setTimeout(() => update(dbRefs.meu, { state: 'idle' }), 4000);
+                sintText.innerHTML = `<strong>${nomeExibicaoParceiro} sentiu seu coração! 🥰</strong>`;
+                setTimeout(() => update(dbRefs.meu, { state: 'idle' }), 5000); // Volta ao normal após 5s
                 return;
             }
 
+            // 3. Ela deixou um coração pra você (Buscando interação)
             if (estadoParceiro.state === 'pensando') {
                 heartBtn.innerText = "❤️"; heartBtn.classList.add('beating');
-                sintText.innerHTML = `<strong>${nomeExibicaoParceiro} deixou um coração para você!</strong>Toque 2x para avisar que sentiu.`;
+                sintText.innerHTML = `<strong>${nomeExibicaoParceiro} pensou em você!</strong>Toque 2x para avisar que sentiu.`;
                 return;
             }
 
+            // 4. Você enviou um coração (Aguardando)
             if (meuEstado.state === 'pensando') {
                 heartBtn.innerText = "❤️";
                 sintText.innerHTML = `<strong>Coração enviado...</strong>Aguardando ${nomeExibicaoParceiro} abrir o app e sentir.`;
                 return;
             }
 
+            // 5. Coração de Fogo! (Ambos online ao mesmo tempo)
             if (meuEstado.online && estadoParceiro.online) {
-                heartBtn.innerText = "💞"; heartBtn.classList.add('connected');
-                sintText.innerHTML = `<strong>Corações Conectados</strong>Ambos estão online agora.`;
-            } else {
-                heartBtn.innerText = "🤍";
-                sintText.innerHTML = `<strong>Modo de Espera</strong>${nomeExibicaoParceiro} está offline agora.<br>Toque 1x para deixar um coração para quando ela entrar.`;
-            }
+                heartBtn.innerText = "❤️‍🔥"; 
+                heartBtn.classList.add('connected'); // Adiciona brilho de fogo
+                sintText.innerHTML = `<strong>Conexão Sincronizada 🔥</strong>Vocês estão online ao mesmo tempo!`;
+                return;
+            } 
+
+            // 6. Alguém offline e sem ações pendentes (Espera)
+            heartBtn.innerText = "🤍";
+            sintText.innerHTML = `<strong>Modo de Espera</strong>${nomeExibicaoParceiro} está offline agora.<br>Toque 1x para deixar um coração para ela.`;
         }
 
         // --- SISTEMA DE RESPOSTA ---
@@ -490,8 +498,8 @@
 
         // --- CHAT SECRETO WIPE ---
         window.apagarSecreto = () => {
-            set(secretoRef, null); // Apaga do Firebase
-            mudarAba('chat', document.querySelectorAll('.nav-item')[1]); // Volta pro chat
+            set(secretoRef, null); 
+            mudarAba('chat', document.querySelectorAll('.nav-item')[1]); 
         }
 
         // --- RENDERIZADOR DE CHAT ---
@@ -566,7 +574,7 @@
                 }
             });
 
-            // Lógica de click do Coração
+            // --- LÓGICA DE CLIQUE NO CORAÇÃO ---
             let tapTimeout = null; let lastTap = 0;
             const heartBtn = document.getElementById('heart-btn');
             
@@ -575,11 +583,13 @@
                 let tapLength = currentTime - lastTap;
                 
                 if (tapLength < 400 && tapLength > 0) {
+                    // TOQUE DUPLO: Avisa pra parceira que você sentiu o coração que ela enviou
                     clearTimeout(tapTimeout);
                     if (estadoParceiro.state === 'pensando') {
                         update(dbRefs.parceiro, { state: 'visto', time: serverTimestamp() });
                     }
                 } else {
+                    // TOQUE SIMPLES: Envia um coração pra ela (se já não estiver conectado ou aguardando)
                     tapTimeout = setTimeout(() => {
                         if (meuEstado.state !== 'pensando' && meuEstado.state !== 'visto') {
                             update(dbRefs.meu, { state: 'pensando', time: serverTimestamp() });

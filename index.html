@@ -18,6 +18,7 @@
             --glass-border: rgba(255, 255, 255, 0.08);
             --secret-bg: #050505;
             --secret-primary: #9d00ff;
+            --secret-dark: #6a00b3;
         }
 
         body {
@@ -44,7 +45,8 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
         .login-box i { font-size: 40px; color: var(--primary); margin-bottom: 20px; }
-        .login-box h3 { margin: 0 0 20px 0; font-weight: 500; font-size: 18px; }
+        .login-box h3 { margin: 0 0 8px 0; font-weight: 500; font-size: 18px; }
+        .login-box p { margin: 0 0 20px 0; font-size: 13px; color: var(--text-muted); }
         input.senha {
             padding: 16px; border-radius: 14px; border: 1px solid var(--glass-border);
             font-size: 20px; text-align: center; background: rgba(0,0,0,0.5); color: white;
@@ -79,29 +81,26 @@
         .view { display: none; flex: 1; overflow: hidden; flex-direction: column; }
         .view.active { display: flex; }
 
-        /* --- VIEW: SINTONIA (CORAÇÃO) --- */
+        /* --- VIEW: SINTONIA --- */
         #view-sintonia { justify-content: center; align-items: center; padding: 20px; background: radial-gradient(circle at 50% 50%, #1f0a0d 0%, var(--bg-dark) 100%); }
         .heart-wrapper { display: flex; flex-direction: column; align-items: center; }
-        
+
         .heart {
             font-size: 100px; cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             user-select: none; -webkit-tap-highlight-color: transparent; filter: drop-shadow(0 0 20px rgba(255, 42, 75, 0.2));
-            /* A linha abaixo garante que o formato do Emoji será sempre igual ao da imagem enviada */
             font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
         }
-        
+
         .heart.beating { animation: pulse 1s infinite alternate; filter: drop-shadow(0 0 40px rgba(255, 42, 75, 0.6)); }
-        
-        /* Efeito visual especial para o coração de fogo 🔥 */
         .heart.connected { animation: fireGlow 1.2s infinite alternate; }
 
         .sintonia-text { margin-top: 30px; text-align: center; color: var(--text-muted); font-size: 14px; line-height: 1.5; }
         .sintonia-text strong { color: white; display: block; margin-bottom: 5px; font-size: 16px; }
 
         @keyframes pulse { 0% { transform: scale(0.9); } 100% { transform: scale(1.15); } }
-        @keyframes fireGlow { 
-            0% { filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.5)); transform: scale(1); } 
-            100% { filter: drop-shadow(0 0 60px rgba(255, 50, 0, 1)); transform: scale(1.15); } 
+        @keyframes fireGlow {
+            0% { filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.5)); transform: scale(1); }
+            100% { filter: drop-shadow(0 0 60px rgba(255, 50, 0, 1)); transform: scale(1.15); }
         }
 
         /* --- VIEW: CHAT --- */
@@ -111,14 +110,14 @@
         .msg-wrapper { display: flex; flex-direction: column; max-width: 85%; position: relative; }
         .msg-wrapper.mine { align-self: flex-end; align-items: flex-end; }
         .msg-wrapper.theirs { align-self: flex-start; align-items: flex-start; }
-        
+
         .msg-box {
             padding: 10px 14px; border-radius: 18px; font-size: 15px; line-height: 1.4;
             cursor: pointer; position: relative;
         }
         .msg-wrapper.mine .msg-box { background: var(--primary); color: white; border-bottom-right-radius: 4px; }
         .msg-wrapper.theirs .msg-box { background: var(--bg-panel); color: white; border-bottom-left-radius: 4px; border: 1px solid var(--glass-border); }
-        
+
         .msg-reply-ref {
             background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 8px; font-size: 12px;
             margin-bottom: 6px; border-left: 3px solid rgba(255,255,255,0.5); display: block;
@@ -153,9 +152,45 @@
 
         /* --- MODO SECRETO --- */
         #view-secreto { background: var(--secret-bg); }
-        #view-secreto .msg-wrapper.mine .msg-box { background: var(--secret-primary); }
-        .secreto-header { text-align: center; padding: 10px; background: rgba(157, 0, 255, 0.1); color: var(--secret-primary); font-size: 12px; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 10px;}
-        .btn-burn { background: transparent; border: 1px solid var(--secret-primary); color: var(--secret-primary); border-radius: 12px; padding: 4px 10px; font-size: 11px; cursor: pointer; }
+        #view-secreto .msg-wrapper.mine .msg-box { background: linear-gradient(135deg, var(--secret-primary), var(--secret-dark)); }
+        #view-secreto .msg-wrapper.theirs .msg-box { background: #1a0a2a; border-color: rgba(157, 0, 255, 0.2); }
+        .secreto-header {
+            text-align: center; padding: 10px 14px; background: rgba(157, 0, 255, 0.1);
+            color: var(--secret-primary); font-size: 12px; font-weight: 600;
+            display: flex; justify-content: space-between; align-items: center; gap: 10px;
+            border-bottom: 1px solid rgba(157, 0, 255, 0.15);
+        }
+        .secreto-header .info { display: flex; align-items: center; gap: 8px; }
+        .btn-burn {
+            background: transparent; border: 1px solid var(--secret-primary); color: var(--secret-primary);
+            border-radius: 12px; padding: 6px 12px; font-size: 11px; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .btn-burn:active { background: rgba(157, 0, 255, 0.2); transform: scale(0.95); }
+
+        /* --- BOTÃO VISUALIZAÇÃO ÚNICA (FOTO) --- */
+        .btn-view-once { color: var(--secret-primary); }
+        #view-secreto .btn-send { background: var(--secret-primary); }
+
+        /* --- MENSAGEM DE FOTO ÚNICA --- */
+        .msg-once-wrapper {
+            position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px;
+        }
+        .msg-once-box {
+            width: 220px; height: 220px; border-radius: 16px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 10px; cursor: pointer;
+            background: linear-gradient(135deg, rgba(157,0,255,0.15), rgba(157,0,255,0.05));
+            border: 2px dashed rgba(157, 0, 255, 0.4); transition: 0.3s;
+        }
+        .msg-once-box:active { transform: scale(0.96); }
+        .msg-once-box i { font-size: 38px; color: var(--secret-primary); }
+        .msg-once-box span { font-size: 12px; color: var(--text-muted); text-align: center; padding: 0 10px; }
+        .msg-once-box.opened { opacity: 0.4; pointer-events: none; background: rgba(0,0,0,0.3); border-style: solid; border-color: rgba(255,255,255,0.05); }
+        .msg-once-box.opened i { color: #444; }
+        .msg-once-label {
+            font-size: 10px; color: var(--secret-primary); font-weight: 600;
+            display: flex; align-items: center; gap: 4px; opacity: 0.7;
+        }
 
         /* --- BOTTOM NAV --- */
         .bottom-nav {
@@ -178,19 +213,29 @@
         #image-viewer img { max-width: 95%; max-height: 90%; border-radius: 10px; }
         .fechar-img { position: absolute; top: 20px; right: 25px; color: white; font-size: 40px; cursor: pointer; }
 
-        /* --- EMOJI BAR (FLUTUANTE NO CHAT) --- */
+        /* --- EMOJI BAR --- */
         .emoji-bar {
             display: flex; justify-content: space-evenly; padding: 8px; background: rgba(0,0,0,0.6);
             backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border);
         }
         .emoji-btn { background: none; border: none; font-size: 22px; cursor: pointer; transition: 0.2s; }
         .emoji-btn:active { transform: scale(0.7); }
-        
+
         .floating-emoji {
             position: fixed; bottom: 80px; font-size: 35px; pointer-events: none; z-index: 50;
             animation: floatUp 3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
         @keyframes floatUp { 0% { opacity: 0; transform: translateY(20px) scale(0.5); } 20% { opacity: 1; transform: translateY(0) scale(1.2); } 100% { opacity: 0; transform: translateY(-400px) scale(1); } }
+
+        /* --- TOAST --- */
+        .toast {
+            position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%);
+            background: rgba(157, 0, 255, 0.9); color: white; padding: 10px 20px;
+            border-radius: 20px; font-size: 13px; z-index: 10000; opacity: 0;
+            transition: 0.3s; pointer-events: none; white-space: nowrap;
+        }
+        .toast.show { opacity: 1; bottom: 130px; }
+        .toast.normal { background: rgba(255, 42, 75, 0.9); }
     </style>
 </head>
 <body>
@@ -200,11 +245,14 @@
         <img id="fullscreen-img" src="">
     </div>
 
+    <div id="toast" class="toast"></div>
+
     <!-- TELA DE LOGIN -->
     <div id="login-screen">
         <div class="login-box">
             <i class="fa-solid fa-lock"></i>
             <h3>Acesso Restrito</h3>
+            <p>Entre com o seu código</p>
             <input type="password" id="senha" class="senha" placeholder="••••" inputmode="numeric">
             <button class="btn-entrar" onclick="verificarSenha()">Entrar</button>
         </div>
@@ -212,7 +260,7 @@
 
     <!-- APP PRINCIPAL -->
     <div id="app-screen">
-        
+
         <div class="app-header">
             <div class="user-info">
                 <span class="user-name" id="partner-name">Conectando...</span>
@@ -241,7 +289,7 @@
                 <button class="emoji-btn" onclick="enviarEmoji('💞')">💞</button>
                 <button class="emoji-btn" onclick="enviarEmoji('🔥')">🔥</button>
             </div>
-            
+
             <div class="reply-indicator" id="reply-box">
                 <span id="reply-text">Respondendo a...</span>
                 <i class="fa-solid fa-times" onclick="cancelarResposta()"></i>
@@ -256,19 +304,25 @@
         <!-- ABA: CHAT SECRETO -->
         <div id="view-secreto" class="view">
             <div class="secreto-header">
-                <i class="fa-solid fa-user-secret"></i> Modo Privado 
-                <button class="btn-burn" onclick="apagarSecreto()">Apagar & Sair</button>
+                <div class="info">
+                    <i class="fa-solid fa-user-secret"></i> Modo Privado
+                </div>
+                <button class="btn-burn" onclick="apagarSecreto()">
+                    <i class="fa-solid fa-fire"></i> Apagar & Sair
+                </button>
             </div>
             <div class="messages" id="messages-secreto"></div>
-            
+
             <div class="reply-indicator" id="reply-box-sec">
                 <span id="reply-text-sec">Respondendo a...</span>
                 <i class="fa-solid fa-times" onclick="cancelarResposta()"></i>
             </div>
             <div class="chat-input-area" style="background: var(--secret-bg);">
-                <button class="btn-action btn-attach" onclick="abrirAnexo('secreto')"><i class="fa-solid fa-camera"></i></button>
+                <button class="btn-action btn-attach btn-view-once" onclick="abrirAnexo('secreto')" title="Foto visualização única">
+                    <i class="fa-solid fa-camera"></i>
+                </button>
                 <input type="text" id="input-secreto" placeholder="Mensagem secreta..." onkeypress="verificarEnter(event, 'secreto')">
-                <button class="btn-action btn-send" style="background: var(--secret-primary);" onclick="enviarMensagem('secreto')"><i class="fa-solid fa-paper-plane"></i></button>
+                <button class="btn-action btn-send" onclick="enviarMensagem('secreto')"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </div>
 
@@ -285,10 +339,9 @@
 
     </div>
 
-    <!-- FIREBASE MODULES -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, push, update, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set, push, update, onDisconnect, serverTimestamp, remove, get } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD15BizvlLZEvZPi4VJDOJ-aI7t1lcNQi4",
@@ -303,20 +356,25 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        let usuarioAtual = ""; let parceiro = ""; let nomeExibicaoParceiro = "";
-        let dbRefs = {}; let emojiRefs = {};
-        
+        // Usuários anônimos - "eu" e "outro" sem nomes pessoais
+        let usuarioAtual = "";
+        let parceiro = "";
+        let nomeExibicaoParceiro = "";
+        let dbRefs = {};
+        let emojiRefs = {};
+
         let meuEstado = { state: "idle", time: 0, online: false };
         let estadoParceiro = { state: "idle", time: 0, online: false, last_seen: 0 };
-        
-        let msgEmResposta = null; 
+
+        let msgEmResposta = null;
         let abaAtual = 'sintonia';
 
-        // Refs de chat
         const chatRef = ref(db, 'chat');
         const secretoRef = ref(db, 'chat_secreto');
 
-        // Formatação de hora
+        // Mapa de mensagens de visualização única já abertas por mim
+        const mensagensUnicasAbertas = new Set();
+
         function formatarHora(timestamp) {
             if (!timestamp) return "";
             const d = new Date(timestamp);
@@ -331,32 +389,44 @@
             return eHoje ? `hoje às ${hora}` : `${d.getDate()}/${d.getMonth()+1} às ${hora}`;
         }
 
+        function mostrarToast(msg, tipo = 'secret') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast' + (tipo === 'normal' ? ' normal' : '');
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
         // Funções Globais UI
         window.fecharImagem = () => { document.getElementById('image-viewer').style.display = 'none'; }
-        window.abrirImagem = (src) => { document.getElementById('fullscreen-img').src = src; document.getElementById('image-viewer').style.display = 'flex'; }
-        
+        window.abrirImagem = (src) => {
+            document.getElementById('fullscreen-img').src = src;
+            document.getElementById('image-viewer').style.display = 'flex';
+        }
+
         window.mudarAba = (aba, el) => {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(v => {
                 v.classList.remove('active'); v.classList.remove('active-secreto');
             });
-            
+
             document.getElementById(`view-${aba}`).classList.add('active');
             if (aba === 'secreto') el.classList.add('active-secreto');
             else el.classList.add('active');
-            
+
             abaAtual = aba;
             cancelarResposta();
             setTimeout(() => {
                 const area = document.getElementById(`messages-${aba === 'chat' ? 'normal' : 'secreto'}`);
-                if(area) area.scrollTop = area.scrollHeight;
+                if (area) area.scrollTop = area.scrollHeight;
             }, 50);
         }
 
         window.verificarSenha = () => {
             const senha = document.getElementById('senha').value;
-            if (senha === '1509') { inicializar('kevin', 'ana', 'Ana'); }
-            else if (senha === '1507') { inicializar('ana', 'kevin', 'Kevin'); }
+            // Códigos anônimos: cada um entra com seu código e vê o outro como "Coração"
+            if (senha === '1509') { inicializar('user_a', 'user_b', 'Coração'); }
+            else if (senha === '1507') { inicializar('user_b', 'user_a', 'Coração'); }
             else {
                 document.getElementById('senha').style.borderColor = 'var(--primary)';
                 document.getElementById('senha').value = '';
@@ -367,7 +437,7 @@
         function inicializar(eu, outro, nomeOutro) {
             usuarioAtual = eu; parceiro = outro; nomeExibicaoParceiro = nomeOutro;
             document.getElementById('partner-name').innerText = nomeExibicaoParceiro;
-            
+
             dbRefs.meu = ref(db, `status_users/${usuarioAtual}`);
             dbRefs.parceiro = ref(db, `status_users/${parceiro}`);
             emojiRefs.meu = ref(db, `emoji/${usuarioAtual}`);
@@ -378,8 +448,8 @@
 
             configurarPresenca();
             iniciarMonitoramento();
-            carregarChat(chatRef, 'messages-normal');
-            carregarChat(secretoRef, 'messages-secreto');
+            carregarChat(chatRef, 'messages-normal', false);
+            carregarChat(secretoRef, 'messages-secreto', true);
         }
 
         function configurarPresenca() {
@@ -387,63 +457,55 @@
             onValue(connectedRef, (snap) => {
                 if (snap.val() === true) {
                     onDisconnect(dbRefs.meu).update({ online: false, last_seen: serverTimestamp() });
-                    update(dbRefs.meu, { online: true }); 
+                    update(dbRefs.meu, { online: true });
                 }
             });
         }
 
-        // --- LÓGICA DO CORAÇÃO CORRIGIDA (PRIORIDADE MÁXIMA PARA O FOGO 🔥) ---
+        // --- LÓGICA DO CORAÇÃO (MANTIDA INTACTA) ---
         function atualizarHeaderESintonia() {
             const statusEl = document.getElementById('partner-status');
             const heartBtn = document.getElementById('heart-btn');
             const sintText = document.getElementById('sintonia-status');
-            
+
             heartBtn.classList.remove('beating', 'connected');
 
-            // 1. Mostrar status no topo (Online / Visto por último)
             if (estadoParceiro.online) {
                 statusEl.innerHTML = `<span class="status-online">Online</span>`;
             } else {
                 statusEl.innerText = estadoParceiro.last_seen ? `Visto por último ${formatarDataHora(estadoParceiro.last_seen)}` : "Offline";
             }
 
-            // 2. Você viu e avisou (Confirmação rápida com brilho especial)
             if (meuEstado.state === 'visto') {
                 heartBtn.innerText = "❤️‍🔥"; heartBtn.classList.add('connected');
                 sintText.innerHTML = `<strong>${nomeExibicaoParceiro} sentiu o seu coração! 🥰</strong>`;
-                setTimeout(() => update(dbRefs.meu, { state: 'idle' }), 5000); 
+                setTimeout(() => update(dbRefs.meu, { state: 'idle' }), 5000);
                 return;
             }
 
-            // 3. Coração de Fogo - PRIORIDADE MÁXIMA! (Ambos online)
-            // Se os dois estiverem na aplicação, isto substitui tudo e o coração incendeia logo.
             if (meuEstado.online && estadoParceiro.online) {
-                heartBtn.innerText = "❤️‍🔥"; 
-                heartBtn.classList.add('connected'); // Ativa a animação de fogo intenso
+                heartBtn.innerText = "❤️‍🔥";
+                heartBtn.classList.add('connected');
                 sintText.innerHTML = `<strong>Conexão Sincronizada 🔥</strong>Vocês estão online ao mesmo tempo!`;
-                
-                // Se algum de vocês tinha deixado uma "saudade" esquecida, isto limpa automaticamente
+
                 if (meuEstado.state === 'pensando') {
                     update(dbRefs.meu, { state: 'idle' });
                 }
                 return;
-            } 
+            }
 
-            // 4. Ela deixou um coração para si (Buscando interação)
             if (estadoParceiro.state === 'pensando') {
                 heartBtn.innerText = "❤️"; heartBtn.classList.add('beating');
                 sintText.innerHTML = `<strong>${nomeExibicaoParceiro} pensou em si!</strong>Toque 2x para avisar que sentiu.`;
                 return;
             }
 
-            // 5. Você enviou um coração (Aguardando)
             if (meuEstado.state === 'pensando') {
                 heartBtn.innerText = "❤️";
                 sintText.innerHTML = `<strong>Coração enviado...</strong>Aguardando ${nomeExibicaoParceiro} abrir a aplicação e sentir.`;
                 return;
             }
 
-            // 6. Alguém está offline e sem ações pendentes (Em Espera)
             heartBtn.innerText = "🤍";
             sintText.innerHTML = `<strong>Modo de Espera</strong>${nomeExibicaoParceiro} está offline agora.<br>Toque 1x para deixar um coração para ela.`;
         }
@@ -453,7 +515,7 @@
             msgEmResposta = texto;
             const isSec = abaAtual === 'secreto';
             document.getElementById(isSec ? 'reply-box-sec' : 'reply-box').style.display = 'flex';
-            document.getElementById(isSec ? 'reply-text-sec' : 'reply-text').innerText = "A responder a: " + texto;
+            document.getElementById(isSec ? 'reply-text-sec' : 'reply-text').innerText = "Respondendo a: " + texto;
             document.getElementById(isSec ? 'input-secreto' : 'input-chat').focus();
         }
 
@@ -464,7 +526,12 @@
         }
 
         // --- ENVIAR MENSAGENS E ARQUIVOS ---
-        window.abrirAnexo = (tipo) => { document.getElementById(`file-${tipo}`).click(); }
+        window.abrirAnexo = (tipo) => {
+            if (tipo === 'secreto') {
+                mostrarToast('📸 A foto será de visualização única!', 'secret');
+            }
+            document.getElementById(`file-${tipo}`).click();
+        }
 
         window.enviarMensagem = (tipo) => {
             const input = document.getElementById(`input-${tipo}`);
@@ -472,7 +539,7 @@
             if (texto === "") return;
 
             const targetRef = tipo === 'secreto' ? secretoRef : chatRef;
-            
+
             const payload = { sender: usuarioAtual, tipo: 'texto', conteudo: texto, timestamp: serverTimestamp() };
             if (msgEmResposta) { payload.replyTo = msgEmResposta; }
 
@@ -491,14 +558,32 @@
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     const MAX = 800; let w = img.width, h = img.height;
-                    if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } 
+                    if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } }
                     else { if (h > MAX) { w *= MAX / h; h = MAX; } }
                     canvas.width = w; canvas.height = h;
                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    
+
                     const base64Img = canvas.toDataURL('image/jpeg', 0.6);
                     const targetRef = tipo === 'secreto' ? secretoRef : chatRef;
-                    push(targetRef, { sender: usuarioAtual, tipo: 'imagem', conteudo: base64Img, timestamp: serverTimestamp() });
+
+                    if (tipo === 'secreto') {
+                        // Foto de visualização única: guarda o conteúdo mas só exibe uma vez
+                        push(targetRef, {
+                            sender: usuarioAtual,
+                            tipo: 'imagem_unica',
+                            conteudo: base64Img,
+                            timestamp: serverTimestamp(),
+                            aberta: false
+                        });
+                        mostrarToast('📸 Foto enviada! Visualização única.', 'secret');
+                    } else {
+                        push(targetRef, {
+                            sender: usuarioAtual,
+                            tipo: 'imagem',
+                            conteudo: base64Img,
+                            timestamp: serverTimestamp()
+                        });
+                    }
                 };
                 img.src = e.target.result;
             };
@@ -508,28 +593,56 @@
 
         // --- CHAT SECRETO WIPE ---
         window.apagarSecreto = () => {
-            set(secretoRef, null); 
-            mudarAba('chat', document.querySelectorAll('.nav-item')[1]); 
+            if (confirm('Apagar todas as mensagens secretas para ambos?')) {
+                set(secretoRef, null);
+                mensagensUnicasAbertas.clear();
+                mostrarToast('🔥 Conversa secreta apagada!', 'secret');
+                mudarAba('chat', document.querySelectorAll('.nav-item')[1]);
+            }
+        }
+
+        // --- ABRIR FOTO DE VISUALIZAÇÃO ÚNICA ---
+        window.abrirFotoUnica = async (msgId, chave, conteudo, jaAberta) => {
+            if (jaAberta || mensagensUnicasAbertas.has(chave)) {
+                mostrarToast('Esta foto já foi vista.', 'secret');
+                return;
+            }
+            mensagensUnicasAbertas.add(chave);
+            // Marca como aberta no Firebase
+            try {
+                await update(ref(db, `chat_secreto/${chave}`), { aberta: true });
+            } catch (err) { console.warn('Erro ao marcar como aberta', err); }
+            // Exibe a imagem em tela cheia
+            abrirImagem(conteudo);
+            mostrarToast('👁️ Foto aberta (visualização única)', 'secret');
         }
 
         // --- RENDERIZADOR DE CHAT ---
-        function carregarChat(refDB, containerId) {
+        function carregarChat(refDB, containerId, isSecreto) {
             onValue(refDB, (snapshot) => {
                 const area = document.getElementById(containerId);
                 area.innerHTML = "";
-                
+                const msgArray = [];
+
                 snapshot.forEach((child) => {
-                    const msg = child.val();
+                    msgArray.push({ chave: child.key, ...child.val() });
+                });
+
+                // Ordena por timestamp
+                msgArray.sort((a, b) => {
+                    const ta = a.timestamp || 0;
+                    const tb = b.timestamp || 0;
+                    return ta - tb;
+                });
+
+                msgArray.forEach((msg) => {
                     const isMine = msg.sender === usuarioAtual;
-                    
+
                     const wrapper = document.createElement('div');
                     wrapper.className = 'msg-wrapper ' + (isMine ? 'mine' : 'theirs');
-                    
+
                     const msgBox = document.createElement('div');
                     msgBox.className = 'msg-box';
-                    if(msg.tipo === 'texto') {
-                        msgBox.onclick = () => prepararResposta(msg.conteudo);
-                    }
 
                     let htmlConteudo = "";
                     if (msg.replyTo) {
@@ -537,14 +650,56 @@
                     }
 
                     if (msg.tipo === 'imagem') {
+                        // Foto normal do chat
+                        if (msg.tipo === 'texto' || msg.tipo === 'imagem') {
+                            msgBox.onclick = () => { if (msg.tipo === 'texto') prepararResposta(msg.conteudo); };
+                        }
                         htmlConteudo += `<img src="${msg.conteudo}" onclick="abrirImagem(this.src)">`;
                         msgBox.style.background = 'transparent'; msgBox.style.padding = '0'; msgBox.style.border = 'none';
+                    } else if (msg.tipo === 'imagem_unica') {
+                        // Foto de visualização única (só existe no chat secreto)
+                        msgBox.style.background = 'transparent'; msgBox.style.padding = '0'; msgBox.style.border = 'none';
+
+                        const jaAberta = msg.aberta === true || mensagensUnicasAbertas.has(msg.chave);
+                        const msgId = `foto-${msg.chave}`;
+
+                        // Container especial
+                        const onceWrapper = document.createElement('div');
+                        onceWrapper.className = 'msg-once-wrapper';
+
+                        const label = document.createElement('div');
+                        label.className = 'msg-once-label';
+                        label.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Visualização única';
+
+                        const onceBox = document.createElement('div');
+                        onceBox.className = 'msg-once-box' + (jaAberta ? ' opened' : '');
+                        onceBox.id = msgId;
+                        onceBox.innerHTML = jaAberta
+                            ? '<i class="fa-solid fa-check-circle"></i><span>Foto já visualizada</span>'
+                            : '<i class="fa-solid fa-camera"></i><span>Toque para ver a foto<br>(apenas uma vez)</span>';
+
+                        if (!jaAberta) {
+                            onceBox.onclick = () => {
+                                window.abrirFotoUnica(msgId, msg.chave, msg.conteudo, false);
+                                // Atualiza visual imediatamente
+                                onceBox.classList.add('opened');
+                                onceBox.innerHTML = '<i class="fa-solid fa-check-circle"></i><span>Foto visualizada</span>';
+                            };
+                        }
+
+                        onceWrapper.appendChild(label);
+                        onceWrapper.appendChild(onceBox);
+                        msgBox.appendChild(onceWrapper);
                     } else {
+                        // Texto normal
+                        msgBox.onclick = () => prepararResposta(msg.conteudo);
                         htmlConteudo += msg.conteudo;
                     }
 
-                    msgBox.innerHTML = htmlConteudo;
-                    
+                    if (!msgBox.innerHTML || msg.tipo === 'texto') {
+                        if (msg.tipo === 'texto') msgBox.innerHTML = htmlConteudo;
+                    }
+
                     const timeLabel = document.createElement('div');
                     timeLabel.className = 'msg-time';
                     timeLabel.innerText = formatarHora(msg.timestamp);
@@ -575,7 +730,7 @@
         function iniciarMonitoramento() {
             onValue(dbRefs.meu, (snap) => { meuEstado = snap.val() || meuEstado; atualizarHeaderESintonia(); });
             onValue(dbRefs.parceiro, (snap) => { estadoParceiro = snap.val() || estadoParceiro; atualizarHeaderESintonia(); });
-            
+
             onValue(emojiRefs.parceiro, (snap) => {
                 const data = snap.val();
                 if (data && data.time > ultimaVerificacaoEmoji) {
@@ -584,22 +739,20 @@
                 }
             });
 
-            // --- LÓGICA DE CLIQUE NO CORAÇÃO ---
+            // --- CLIQUE NO CORAÇÃO ---
             let tapTimeout = null; let lastTap = 0;
             const heartBtn = document.getElementById('heart-btn');
-            
+
             heartBtn.addEventListener('click', function() {
                 let currentTime = new Date().getTime();
                 let tapLength = currentTime - lastTap;
-                
+
                 if (tapLength < 400 && tapLength > 0) {
-                    // TOQUE DUPLO: Avisa a parceira que sentiu o coração que ela enviou
                     clearTimeout(tapTimeout);
                     if (estadoParceiro.state === 'pensando') {
                         update(dbRefs.parceiro, { state: 'visto', time: serverTimestamp() });
                     }
                 } else {
-                    // TOQUE SIMPLES: Envia um coração (se já não estiver conectado ou a aguardar)
                     tapTimeout = setTimeout(() => {
                         if (meuEstado.state !== 'pensando' && meuEstado.state !== 'visto') {
                             update(dbRefs.meu, { state: 'pensando', time: serverTimestamp() });

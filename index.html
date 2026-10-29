@@ -618,7 +618,7 @@
                     if (msg.replyTo) htmlConteudo += `<div class="msg-reply-ref">${msg.replyTo}</div>`;
 
                     if (msg.tipo === 'imagem') {
-                        msgBox.onclick = () => prepararResposta(msg.conteudo);
+                        msgBox.onclick = () => prepararResposta('📷 Imagem');
                         htmlConteudo += `<img src="${msg.conteudo}" onclick="abrirImagem(this.src)">`;
                         msgBox.style.background = 'transparent'; msgBox.style.padding = '0'; msgBox.style.border = 'none';
                     } else if (msg.tipo === 'imagem_unica') {
@@ -651,7 +651,9 @@
                         htmlConteudo += msg.conteudo;
                     }
 
-                    if (msg.tipo === 'texto') msgBox.innerHTML = htmlConteudo;
+                    if (msg.tipo === 'texto' || msg.tipo === 'imagem') {
+                        msgBox.innerHTML = htmlConteudo;
+                    }
 
                     const timeLabel = document.createElement('div');
                     timeLabel.className = 'msg-time';

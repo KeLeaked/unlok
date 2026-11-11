@@ -107,7 +107,7 @@ button{font-family:inherit}
 .mw.mine{align-self:flex-end;align-items:flex-end}
 .mw.theirs{align-self:flex-start;align-items:flex-start}
 .mw.first{margin-top:7px}
-.bubble{padding:8px 12px 6px;border-radius:18px;font-size:15px;line-height:1.38;word-break:break-word;white-space:pre-wrap;position:relative;animation:pop .22s ease-out;-webkit-user-select:none}
+.bubble{padding:8px 12px 6px;border-radius:18px;font-size:15px;line-height:1.38;word-break:break-word;overflow-wrap:anywhere;white-space:pre-wrap;position:relative;animation:pop .22s ease-out;-webkit-user-select:none}
 @keyframes pop{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}
 .mine .bubble{background:linear-gradient(135deg,#ff3b5c,#e0204a);color:#fff;border-bottom-right-radius:5px}
 .theirs .bubble{background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:5px}
@@ -119,6 +119,20 @@ button{font-family:inherit}
 .bubble.bare .meta{padding:3px 4px 0}
 .bubble img{display:block;width:210px;max-width:100%;height:auto;max-height:280px;object-fit:cover;border-radius:14px}
 .reply-ref{display:block;background:rgba(0,0,0,.22);border-left:3px solid rgba(255,255,255,.55);border-radius:8px;padding:5px 9px;margin-bottom:5px;font-size:12px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+
+/* Links clicáveis */
+.bubble a.lnk{
+  color:#8fd0ff;text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1.5px;
+  font-weight:500;word-break:break-all;
+  -webkit-user-select:auto;user-select:auto;-webkit-touch-callout:default;
+  pointer-events:auto;cursor:pointer;
+  padding:2px 0;
+}
+.mine .bubble a.lnk{color:#fff;text-decoration-color:rgba(255,255,255,.85)}
+.bubble a.lnk:active{opacity:.6}
+.bubble a.lnk::before{content:"\f0c1";font-family:"Font Awesome 6 Free";font-weight:900;font-size:.8em;margin-right:5px;opacity:.8;display:inline-block;text-decoration:none}
+#view-secreto .theirs .bubble a.lnk{color:#c9a0ff}
+
 .empty{margin:auto;text-align:center;color:var(--muted);font-size:13px;line-height:1.6;padding:30px}
 .empty i{display:block;font-size:30px;margin-bottom:10px;color:var(--primary);opacity:.8}
 
@@ -335,6 +349,61 @@ function visto(ts) {
   return hoje ? `visto hoje às ${hhmm(ts)}` : `visto ${diaLabel(ts).toLowerCase()} às ${hhmm(ts)}`;
 }
 function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+/* ---------- links clicáveis ---------- */
+// Pega http(s)://..., www.... e domínios comuns sem protocolo (ex.: instagram.com/reel/xyz)
+const URL_RE = /((?:https?:\/\/|www\.)[^\s<>"]+|(?:[a-z0-9-]+\.)*(?:instagram\.com|instagr\.am|youtu\.be|youtube\.com|tiktok\.com|vm\.tiktok\.com|twitter\.com|x\.com|facebook\.com|fb\.watch|spotify\.com|open\.spotify\.com|wa\.me|pinterest\.com|pin\.it|g\.co|maps\.app\.goo\.gl|goo\.gl)\/[^\s<>"]*)/gi;
+const TRAIL_RE = /[.,;:!?)\]}'"»…]+$/;
+
+function normalizarUrl(raw) {
+  const href = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw;
+  try {
+    const u = new URL(href);
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
+    return u;
+  } catch (e) { return null; }
+}
+function rotuloUrl(u) {
+  // Mostra algo curto e legível: host + caminho (sem os parâmetros gigantes do Instagram)
+  let txt = u.hostname.replace(/^www\./, '') + (u.pathname !== '/' ? u.pathname : '');
+  if (txt.length > 38) txt = txt.slice(0, 37) + '…';
+  return txt;
+}
+function abrirLink(url) {
+  // Tentativa 1: nova aba/app (funciona com deep link do Instagram em celulares)
+  const w = window.open(url, '_blank', 'noopener,noreferrer');
+  // Tentativa 2: se o navegador bloqueou, navega na própria aba
+  if (!w) location.href = url;
+}
+function adicionarTexto(container, texto) {
+  if (!texto) return;
+  URL_RE.lastIndex = 0;
+  let ultimo = 0, m;
+  while ((m = URL_RE.exec(texto)) !== null) {
+    let bruto = m[0];
+    const sobra = (bruto.match(TRAIL_RE) || [''])[0];
+    if (sobra) bruto = bruto.slice(0, bruto.length - sobra.length);
+    const u = bruto ? normalizarUrl(bruto) : null;
+    if (!u) continue;
+    if (m.index > ultimo) container.appendChild(document.createTextNode(texto.slice(ultimo, m.index)));
+    const a = el('a', 'lnk', rotuloUrl(u));
+    a.href = u.href;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.dataset.url = u.href;
+    container.appendChild(a);
+    ultimo = m.index + bruto.length;
+    URL_RE.lastIndex = ultimo;             // devolve a pontuação final para o texto normal
+  }
+  if (ultimo < texto.length) container.appendChild(document.createTextNode(texto.slice(ultimo)));
+}
+// Clique em link: abre sem disparar "responder" nem apagar
+document.addEventListener('click', e => {
+  const a = e.target.closest && e.target.closest('a.lnk');
+  if (!a) return;
+  e.preventDefault(); e.stopPropagation();
+  abrirLink(a.dataset.url || a.href);
+}, true);
 
 /* ---------- login com teclado numérico ---------- */
 let pin = '';
@@ -559,12 +628,21 @@ function scrollBottom(t, force) {
   const a = $('messages-' + t); if (!a) return;
   requestAnimationFrame(() => { a.scrollTop = a.scrollHeight; });
 }
+const ehLink = ev => !!(ev.target && ev.target.closest && ev.target.closest('a.lnk'));
 function pressionar(node, onTap, onLong) {
   let t = null, fired = false;
-  node.addEventListener('pointerdown', () => { fired = false; if (onLong) t = setTimeout(() => { fired = true; vibrar(15); onLong(); }, 550); });
+  node.addEventListener('pointerdown', ev => {
+    fired = false;
+    if (ehLink(ev)) return;                           // toque em link nunca inicia "apagar"
+    if (onLong) t = setTimeout(() => { fired = true; vibrar(15); onLong(); }, 550);
+  });
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => node.addEventListener(ev, () => clearTimeout(t)));
-  node.addEventListener('contextmenu', e => e.preventDefault());
-  node.addEventListener('click', () => { if (fired) { fired = false; return; } onTap && onTap(); });
+  node.addEventListener('contextmenu', e => { if (!ehLink(e)) e.preventDefault(); });
+  node.addEventListener('click', ev => {
+    if (ehLink(ev)) return;                           // link abre; não vira "responder"
+    if (fired) { fired = false; return; }
+    onTap && onTap();
+  });
 }
 function renderTab(tab) {
   const area = $('messages-' + tab);
@@ -612,7 +690,7 @@ function renderTab(tab) {
       if (!aberta && !mine) box.addEventListener('click', ev => { ev.stopPropagation(); abrirFotoUnica(m); });
       b.appendChild(box); resumo = '📷 Foto única';
     } else {
-      b.appendChild(document.createTextNode(m.conteudo || ''));
+      adicionarTexto(b, m.conteudo || '');
     }
 
     const meta = el('div', 'meta');
@@ -620,7 +698,6 @@ function renderTab(tab) {
     if (mine) {
       const lido = leituraPar >= (m.timestamp || 0) && m.timestamp;
       const tick = el('i', 'fa-solid ' + (lido ? 'fa-check-double read' : 'fa-check') );
-      tick.className += lido ? '' : '';
       meta.appendChild(tick);
     }
     b.appendChild(meta);

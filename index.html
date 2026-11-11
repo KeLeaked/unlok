@@ -370,10 +370,24 @@ function rotuloUrl(u) {
   return txt;
 }
 function abrirLink(url) {
-  // Tentativa 1: nova aba/app (funciona com deep link do Instagram em celulares)
-  const w = window.open(url, '_blank', 'noopener,noreferrer');
-  // Tentativa 2: se o navegador bloqueou, navega na própria aba
-  if (!w) location.href = url;
+  // Clique "nativo" num <a target=_blank>: é o que melhor abre o app do Instagram
+  const a = document.createElement('a');
+  a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+  a.style.display = 'none';
+  document.body.appendChild(a); a.click();
+  setTimeout(() => a.remove(), 500);
+}
+function extrairLinks(texto) {
+  const out = []; if (!texto) return out;
+  URL_RE.lastIndex = 0; let m;
+  while ((m = URL_RE.exec(texto)) !== null) {
+    let bruto = m[0];
+    const sobra = (bruto.match(TRAIL_RE) || [''])[0];
+    if (sobra) bruto = bruto.slice(0, bruto.length - sobra.length);
+    const u = bruto ? normalizarUrl(bruto) : null;
+    if (u) out.push(u.href);
+  }
+  return out;
 }
 function adicionarTexto(container, texto) {
   if (!texto) return;
@@ -401,8 +415,7 @@ function adicionarTexto(container, texto) {
 document.addEventListener('click', e => {
   const a = e.target.closest && e.target.closest('a.lnk');
   if (!a) return;
-  e.preventDefault(); e.stopPropagation();
-  abrirLink(a.dataset.url || a.href);
+  e.stopPropagation();   // impede "responder"; o link abre pelo comportamento nativo do <a>
 }, true);
 
 /* ---------- login com teclado numérico ---------- */
@@ -700,10 +713,23 @@ function renderTab(tab) {
       const tick = el('i', 'fa-solid ' + (lido ? 'fa-check-double read' : 'fa-check') );
       meta.appendChild(tick);
     }
+    const links = (m.tipo === 'texto' || !m.tipo) ? extrairLinks(m.conteudo) : [];
+    if (links.length) {
+      // em mensagens com link, um botão próprio faz o "responder"
+      const rp = el('i', 'fa-solid fa-reply rp');
+      rp.style.cssText = 'cursor:pointer;padding:4px 6px;margin:-4px 0 -4px 4px;opacity:.9';
+      rp.addEventListener('click', ev => { ev.stopPropagation(); iniciarResposta(resumo); });
+      rp.addEventListener('pointerdown', ev => ev.stopPropagation());
+      meta.insertBefore(rp, meta.firstChild);
+    }
     b.appendChild(meta);
 
     pressionar(b,
-      () => { if (m.tipo !== 'imagem_unica') iniciarResposta(resumo); },
+      () => {
+        if (m.tipo === 'imagem_unica') return;
+        if (links.length) { abrirLink(links[0]); return; }   // tocar na bolha com link abre o link
+        iniciarResposta(resumo);
+      },
       mine ? () => { if (confirm('Apagar esta mensagem para os dois?')) remove(ref(db, `${PATH[tab]}/${m.chave}`)); } : null
     );
     w.appendChild(b); area.appendChild(w);

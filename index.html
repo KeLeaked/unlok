@@ -100,14 +100,26 @@ button{font-family:inherit}
 .mini-heart{position:fixed;pointer-events:none;z-index:60;font-size:22px;animation:miniUp var(--d,2s) ease-out forwards}
 @keyframes miniUp{0%{opacity:0;transform:translate(0,0) scale(.4)}15%{opacity:1}100%{opacity:0;transform:translate(var(--x,0),-260px) scale(1.2) rotate(var(--r,0deg))}}
 
-/* ===== Chat ===== */
-.messages{flex:1;min-height:0;overflow-y:auto;padding:14px 12px 8px;display:flex;flex-direction:column;gap:3px;-webkit-overflow-scrolling:touch;scroll-behavior:auto}
+/* ===== Chat & Swipe to Reply ===== */
+.messages{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:14px 12px 8px;display:flex;flex-direction:column;gap:3px;-webkit-overflow-scrolling:touch;scroll-behavior:auto}
 .day{align-self:center;font-size:11px;color:var(--muted);background:rgba(255,255,255,.05);padding:4px 12px;border-radius:12px;margin:12px 0 8px;font-weight:500}
-.mw{display:flex;flex-direction:column;max-width:82%}
+.mw{display:flex;flex-direction:column;max-width:82%;position:relative;touch-action:pan-y}
 .mw.mine{align-self:flex-end;align-items:flex-end}
 .mw.theirs{align-self:flex-start;align-items:flex-start}
 .mw.first{margin-top:7px}
-.bubble{padding:8px 12px 6px;border-radius:18px;font-size:15px;line-height:1.38;word-break:break-word;overflow-wrap:anywhere;white-space:pre-wrap;position:relative;animation:pop .22s ease-out;-webkit-user-select:none}
+
+/* Ícone que aparece atrás ao arrastar para o lado */
+.swipe-icon{
+  position:absolute;left:-38px;top:50%;transform:translateY(-50%) scale(.4);
+  width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);
+  color:var(--text);display:grid;place-items:center;font-size:12px;
+  opacity:0;pointer-events:none;transition:background .15s,color .15s;
+}
+.mw.mine .swipe-icon{left:auto;right:calc(100% + 10px)}
+.swipe-icon.ready{background:var(--primary);color:#fff}
+#view-secreto .swipe-icon.ready{background:var(--sec);color:#fff}
+
+.bubble{padding:8px 12px 6px;border-radius:18px;font-size:15px;line-height:1.38;word-break:break-word;overflow-wrap:anywhere;white-space:pre-wrap;position:relative;animation:pop .22s ease-out;will-change:transform}
 @keyframes pop{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}
 .mine .bubble{background:linear-gradient(135deg,#ff3b5c,#e0204a);color:#fff;border-bottom-right-radius:5px}
 .theirs .bubble{background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:5px}
@@ -120,17 +132,17 @@ button{font-family:inherit}
 .bubble img{display:block;width:210px;max-width:100%;height:auto;max-height:280px;object-fit:cover;border-radius:14px}
 .reply-ref{display:block;background:rgba(0,0,0,.22);border-left:3px solid rgba(255,255,255,.55);border-radius:8px;padding:5px 9px;margin-bottom:5px;font-size:12px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
 
-/* Links clicáveis */
+/* Links 100% clicáveis */
 .bubble a.lnk{
-  color:#8fd0ff;text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1.5px;
+  color:#8fd0ff;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px;
   font-weight:500;word-break:break-all;
   -webkit-user-select:auto;user-select:auto;-webkit-touch-callout:default;
-  pointer-events:auto;cursor:pointer;
-  padding:2px 0;
+  pointer-events:auto;cursor:pointer;touch-action:manipulation;
+  display:inline;padding:3px 2px;position:relative;z-index:3;
 }
-.mine .bubble a.lnk{color:#fff;text-decoration-color:rgba(255,255,255,.85)}
-.bubble a.lnk:active{opacity:.6}
-.bubble a.lnk::before{content:"\f0c1";font-family:"Font Awesome 6 Free";font-weight:900;font-size:.8em;margin-right:5px;opacity:.8;display:inline-block;text-decoration:none}
+.mine .bubble a.lnk{color:#fff;text-decoration-color:rgba(255,255,255,.9)}
+.bubble a.lnk:active{opacity:.65}
+.bubble a.lnk::before{content:"\f0c1";font-family:"Font Awesome 6 Free";font-weight:900;font-size:.8em;margin-right:5px;opacity:.85;display:inline-block;text-decoration:none}
 #view-secreto .theirs .bubble a.lnk{color:#c9a0ff}
 
 .empty{margin:auto;text-align:center;color:var(--muted);font-size:13px;line-height:1.6;padding:30px}
@@ -302,11 +314,11 @@ const db = getDatabase(initializeApp(firebaseConfig));
 const $ = id => document.getElementById(id);
 const NOME_PARCEIRO = 'Coração';
 const PINS = { '1509': ['user_a', 'user_b'], '1507': ['user_b', 'user_a'] };
-const LOCK_AFTER_MS = 60000;           // bloqueia sozinho se ficar 1 min fora do app
+const LOCK_AFTER_MS = 60000;
 const PATH = { chat: 'chat', secreto: 'chat_secreto' };
 
 let eu = '', outro = '';
-let R = {};                                // refs de status/emoji
+let R = {};
 let appReady = false, locked = true;
 let meu = { state: 'idle', online: false };
 let par = { state: 'idle', online: false };
@@ -351,7 +363,6 @@ function visto(ts) {
 function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 
 /* ---------- links clicáveis ---------- */
-// Pega http(s)://..., www.... e domínios comuns sem protocolo (ex.: instagram.com/reel/xyz)
 const URL_RE = /((?:https?:\/\/|www\.)[^\s<>"]+|(?:[a-z0-9-]+\.)*(?:instagram\.com|instagr\.am|youtu\.be|youtube\.com|tiktok\.com|vm\.tiktok\.com|twitter\.com|x\.com|facebook\.com|fb\.watch|spotify\.com|open\.spotify\.com|wa\.me|pinterest\.com|pin\.it|g\.co|maps\.app\.goo\.gl|goo\.gl)\/[^\s<>"]*)/gi;
 const TRAIL_RE = /[.,;:!?)\]}'"»…]+$/;
 
@@ -364,30 +375,16 @@ function normalizarUrl(raw) {
   } catch (e) { return null; }
 }
 function rotuloUrl(u) {
-  // Mostra algo curto e legível: host + caminho (sem os parâmetros gigantes do Instagram)
   let txt = u.hostname.replace(/^www\./, '') + (u.pathname !== '/' ? u.pathname : '');
   if (txt.length > 38) txt = txt.slice(0, 37) + '…';
   return txt;
 }
 function abrirLink(url) {
-  // Clique "nativo" num <a target=_blank>: é o que melhor abre o app do Instagram
   const a = document.createElement('a');
   a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
   a.style.display = 'none';
   document.body.appendChild(a); a.click();
   setTimeout(() => a.remove(), 500);
-}
-function extrairLinks(texto) {
-  const out = []; if (!texto) return out;
-  URL_RE.lastIndex = 0; let m;
-  while ((m = URL_RE.exec(texto)) !== null) {
-    let bruto = m[0];
-    const sobra = (bruto.match(TRAIL_RE) || [''])[0];
-    if (sobra) bruto = bruto.slice(0, bruto.length - sobra.length);
-    const u = bruto ? normalizarUrl(bruto) : null;
-    if (u) out.push(u.href);
-  }
-  return out;
 }
 function adicionarTexto(container, texto) {
   if (!texto) return;
@@ -404,19 +401,12 @@ function adicionarTexto(container, texto) {
     a.href = u.href;
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
-    a.dataset.url = u.href;
     container.appendChild(a);
     ultimo = m.index + bruto.length;
-    URL_RE.lastIndex = ultimo;             // devolve a pontuação final para o texto normal
+    URL_RE.lastIndex = ultimo;
   }
   if (ultimo < texto.length) container.appendChild(document.createTextNode(texto.slice(ultimo)));
 }
-// Clique em link: abre sem disparar "responder" nem apagar
-document.addEventListener('click', e => {
-  const a = e.target.closest && e.target.closest('a.lnk');
-  if (!a) return;
-  e.stopPropagation();   // impede "responder"; o link abre pelo comportamento nativo do <a>
-}, true);
 
 /* ---------- login com teclado numérico ---------- */
 let pin = '';
@@ -535,7 +525,6 @@ function setHeart(s, title, sub, hint) {
 }
 function atualizarSintonia() {
   if (!appReady) return;
-  // cabeçalho
   const st = $('partner-status'); st.className = '';
   if (par.online && par.typing) { st.textContent = 'digitando…'; st.classList.add('typing'); }
   else if (par.online) { st.textContent = 'online'; st.classList.add('online'); }
@@ -636,27 +625,116 @@ function atualizarBadges() {
   $('bd-sintonia').classList.toggle('show', par.state === 'pensando' && aba !== 'sintonia');
 }
 
-/* ---------- renderização do chat ---------- */
+/* ---------- renderização do chat + Swipe to Reply ---------- */
 function scrollBottom(t, force) {
   const a = $('messages-' + t); if (!a) return;
   requestAnimationFrame(() => { a.scrollTop = a.scrollHeight; });
 }
+
 const ehLink = ev => !!(ev.target && ev.target.closest && ev.target.closest('a.lnk'));
-function pressionar(node, onTap, onLong) {
-  let t = null, fired = false;
-  node.addEventListener('pointerdown', ev => {
-    fired = false;
-    if (ehLink(ev)) return;                           // toque em link nunca inicia "apagar"
-    if (onLong) t = setTimeout(() => { fired = true; vibrar(15); onLong(); }, 550);
-  });
-  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => node.addEventListener(ev, () => clearTimeout(t)));
-  node.addEventListener('contextmenu', e => { if (!ehLink(e)) e.preventDefault(); });
-  node.addEventListener('click', ev => {
-    if (ehLink(ev)) return;                           // link abre; não vira "responder"
-    if (fired) { fired = false; return; }
-    onTap && onTap();
+
+// Gestos da bolha: arrastar para direita = responder | segurar = apagar (se for sua)
+function configurarGestosBolha(wrapper, bubble, swipeIcon, onSwipeReply, onLongDelete) {
+  let startX = 0, startY = 0, dx = 0;
+  let tracking = false, swiping = false, vibrado = false;
+  let longTimer = null, longFired = false;
+  const THRESHOLD = 54;
+
+  const limparTimer = () => { if (longTimer) { clearTimeout(longTimer); longTimer = null; } };
+
+  bubble.addEventListener('touchstart', ev => {
+    if (ev.touches.length !== 1) return;
+    const t = ev.touches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+    dx = 0;
+    tracking = true;
+    swiping = false;
+    vibrado = false;
+    longFired = false;
+
+    bubble.style.transition = 'none';
+    swipeIcon.style.transition = 'none';
+
+    if (onLongDelete && !ehLink(ev)) {
+      longTimer = setTimeout(() => {
+        longFired = true;
+        tracking = false;
+        vibrar(20);
+        onLongDelete();
+      }, 600);
+    }
+  }, { passive: true });
+
+  bubble.addEventListener('touchmove', ev => {
+    if (!tracking || ev.touches.length !== 1) return;
+    const t = ev.touches[0];
+    const diffX = t.clientX - startX;
+    const diffY = t.clientY - startY;
+
+    // Se moveu o dedo, cancela o toque longo de apagar
+    if (Math.abs(diffX) > 8 || Math.abs(diffY) > 8) limparTimer();
+
+    if (!swiping) {
+      // Se rolou na vertical ou arrastou para a esquerda, libera o scroll normal
+      if (Math.abs(diffY) > Math.abs(diffX) || diffX < 0) {
+        tracking = false;
+        return;
+      }
+      if (diffX > 10) swiping = true;
+    }
+
+    if (swiping) {
+      if (ev.cancelable) ev.preventDefault();
+      // Resistência elástica estilo WhatsApp
+      dx = Math.min(82, diffX * 0.72);
+      bubble.style.transform = `translateX(${dx}px)`;
+
+      const prog = Math.min(1, dx / THRESHOLD);
+      swipeIcon.style.opacity = String(prog);
+      swipeIcon.style.transform = `translateY(-50%) scale(${0.5 + prog * 0.5})`;
+
+      if (dx >= THRESHOLD && !vibrado) {
+        vibrado = true;
+        vibrar(14);
+        swipeIcon.classList.add('ready');
+      } else if (dx < THRESHOLD && vibrado) {
+        vibrado = false;
+        swipeIcon.classList.remove('ready');
+      }
+    }
+  }, { passive: false });
+
+  const finalizarToque = () => {
+    limparTimer();
+    if (!tracking && !swiping) return;
+    const disparar = swiping && dx >= THRESHOLD;
+    tracking = false;
+    swiping = false;
+
+    bubble.style.transition = 'transform .24s cubic-bezier(.22,1,.36,1)';
+    swipeIcon.style.transition = 'opacity .2s, transform .2s';
+    bubble.style.transform = 'translateX(0)';
+    swipeIcon.style.opacity = '0';
+    swipeIcon.style.transform = 'translateY(-50%) scale(.4)';
+    swipeIcon.classList.remove('ready');
+
+    if (disparar && onSwipeReply) {
+      setTimeout(() => onSwipeReply(), 90);
+    }
+  };
+
+  bubble.addEventListener('touchend', finalizarToque);
+  bubble.addEventListener('touchcancel', finalizarToque);
+
+  // Suporte também para clique direito no desktop apagar
+  bubble.addEventListener('contextmenu', e => {
+    if (ehLink(e)) return;
+    e.preventDefault();
+    if (!longFired && onLongDelete) onLongDelete();
   });
 }
+
 function renderTab(tab) {
   const area = $('messages-' + tab);
   const msgs = cache[tab];
@@ -681,10 +759,16 @@ function renderTab(tab) {
     senderAnt = m.sender; tsAnt = ts;
 
     const w = el('div', 'mw ' + (mine ? 'mine' : 'theirs') + (agrup ? ' grouped' : ' first'));
+    const swipeIcon = el('div', 'swipe-icon');
+    swipeIcon.innerHTML = '<i class="fa-solid fa-reply"></i>';
+    w.appendChild(swipeIcon);
+
     const b = el('div', 'bubble');
     if (m.replyTo) b.appendChild(el('span', 'reply-ref', m.replyTo));
 
     let resumo = m.conteudo;
+    let podeResponder = true;
+
     if (m.tipo === 'imagem') {
       b.classList.add('bare');
       const img = el('img'); img.src = m.conteudo; img.loading = 'lazy';
@@ -702,6 +786,7 @@ function renderTab(tab) {
       box.append(ic, sp);
       if (!aberta && !mine) box.addEventListener('click', ev => { ev.stopPropagation(); abrirFotoUnica(m); });
       b.appendChild(box); resumo = '📷 Foto única';
+      if (aberta) podeResponder = false;
     } else {
       adicionarTexto(b, m.conteudo || '');
     }
@@ -710,28 +795,19 @@ function renderTab(tab) {
     meta.appendChild(el('span', null, hhmm(ts)));
     if (mine) {
       const lido = leituraPar >= (m.timestamp || 0) && m.timestamp;
-      const tick = el('i', 'fa-solid ' + (lido ? 'fa-check-double read' : 'fa-check') );
+      const tick = el('i', 'fa-solid ' + (lido ? 'fa-check-double read' : 'fa-check'));
       meta.appendChild(tick);
-    }
-    const links = (m.tipo === 'texto' || !m.tipo) ? extrairLinks(m.conteudo) : [];
-    if (links.length) {
-      // em mensagens com link, um botão próprio faz o "responder"
-      const rp = el('i', 'fa-solid fa-reply rp');
-      rp.style.cssText = 'cursor:pointer;padding:4px 6px;margin:-4px 0 -4px 4px;opacity:.9';
-      rp.addEventListener('click', ev => { ev.stopPropagation(); iniciarResposta(resumo); });
-      rp.addEventListener('pointerdown', ev => ev.stopPropagation());
-      meta.insertBefore(rp, meta.firstChild);
     }
     b.appendChild(meta);
 
-    pressionar(b,
-      () => {
-        if (m.tipo === 'imagem_unica') return;
-        if (links.length) { abrirLink(links[0]); return; }   // tocar na bolha com link abre o link
-        iniciarResposta(resumo);
-      },
+    configurarGestosBolha(
+      w,
+      b,
+      swipeIcon,
+      podeResponder ? () => iniciarResposta(resumo) : null,
       mine ? () => { if (confirm('Apagar esta mensagem para os dois?')) remove(ref(db, `${PATH[tab]}/${m.chave}`)); } : null
     );
+
     w.appendChild(b); area.appendChild(w);
   });
   if (primeira || perto || msgs[msgs.length - 1].sender === eu) scrollBottom(tab);
@@ -759,10 +835,10 @@ function enviar(tab) {
   if (respondendo) payload.replyTo = respondendo;
   push(ref(db, PATH[tab]), payload);
   input.value = ''; cancelarResposta(); stopTyping();
-  input.focus();                         // mantém o teclado aberto
+  input.focus();
 }
 document.querySelectorAll('[data-send]').forEach(b => {
-  b.addEventListener('pointerdown', e => e.preventDefault());   // não rouba o foco do input
+  b.addEventListener('pointerdown', e => e.preventDefault());
   b.addEventListener('click', () => enviar(b.dataset.send));
 });
 ['chat', 'secreto'].forEach(t => {

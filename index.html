@@ -184,6 +184,27 @@ button{font-family:inherit}
 .mine .like-pill{left:auto;right:10px}
 @keyframes likePop{0%{transform:scale(0)}70%{transform:scale(1.22)}100%{transform:scale(1)}}
 
+/* Player de Áudio */
+.voice-box{display:flex;align-items:center;gap:10px;min-width:195px;padding:2px 2px 1px}
+.voice-play{
+  width:34px;height:34px;border-radius:50%;border:none;
+  background:rgba(255,255,255,.2);color:#fff;font-size:13px;
+  display:grid;place-items:center;cursor:pointer;flex-shrink:0;transition:.14s;
+}
+.theirs .voice-play{background:rgba(255,59,92,.2);color:var(--primary)}
+#view-secreto .theirs .voice-play{background:rgba(162,31,255,.22);color:#c9a0ff}
+.voice-play:active{transform:scale(.88)}
+.voice-track{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0}
+.voice-bar{
+  height:5px;border-radius:4px;background:rgba(255,255,255,.22);
+  position:relative;cursor:pointer;overflow:hidden;
+}
+.theirs .voice-bar{background:rgba(255,255,255,.12)}
+.voice-fill{height:100%;width:0%;background:#fff;border-radius:4px;transition:width .08s linear}
+.theirs .voice-fill{background:var(--primary)}
+#view-secreto .theirs .voice-fill{background:var(--sec)}
+.voice-time{font-size:11px;opacity:.85;font-variant-numeric:tabular-nums}
+
 /* Mídia e Figurinhas */
 .bubble.bare{background:none!important;border:none!important;padding:0;box-shadow:none!important}
 .bubble.bare .meta{padding:4px 6px 0;background:rgba(0,0,0,.35);border-radius:10px;width:fit-content;margin-left:auto;margin-top:4px}
@@ -296,15 +317,34 @@ button{font-family:inherit}
 .reply-bar i.l{color:var(--primary)}
 .reply-bar span{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--text)}
 .reply-bar .x{padding:6px;cursor:pointer}
-.composer{display:flex;align-items:flex-end;gap:7px;padding:8px 10px 10px;background:var(--bg);border-top:1px solid var(--line)}
+.composer{display:flex;align-items:center;gap:7px;padding:8px 10px 10px;background:var(--bg);border-top:1px solid var(--line);position:relative}
 .composer input[type=text]{flex:1;min-width:0;padding:11px 15px;border-radius:22px;background:var(--panel);color:var(--text);border:1px solid var(--line);font-size:16px;font-family:inherit;outline:none;-webkit-user-select:text;user-select:text;transition:.2s}
 .composer input[type=text]:focus{border-color:rgba(255,59,92,.55);background:#16161d}
-.round{width:42px;height:42px;border-radius:50%;border:none;display:grid;place-items:center;font-size:16px;cursor:pointer;flex-shrink:0;transition:.15s}
+
+/* Overlay de gravação de voz */
+.rec-bar{
+  display:none;flex:1;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 14px;border-radius:22px;background:#1a0c12;border:1px solid rgba(255,59,92,.45);
+  min-width:0;
+}
+.composer.recording .rec-bar{display:flex}
+.composer.recording input[type=text],
+.composer.recording .attach,
+.composer.recording .sticker-btn{display:none}
+.rec-left{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#fff;font-variant-numeric:tabular-nums}
+.rec-dot{width:9px;height:9px;border-radius:50%;background:#ff3b5c;animation:recPulse 1s infinite}
+@keyframes recPulse{50%{opacity:.25;transform:scale(.8)}}
+.rec-slide{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:.15s}
+.rec-slide.cancel-warn{color:#ff5470;font-weight:600}
+
+.round{width:42px;height:42px;border-radius:50%;border:none;display:grid;place-items:center;font-size:16px;cursor:pointer;flex-shrink:0;transition:.15s;touch-action:none}
 .round:active{transform:scale(.88)}
 .round.attach{background:var(--panel);color:var(--muted);border:1px solid var(--line)}
 .round.sticker-btn{background:var(--panel);color:#ffb347;border:1px solid var(--line)}
 .round.sticker-btn.open{background:rgba(255,179,71,.18);border-color:rgba(255,179,71,.5)}
 .round.send{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 4px 16px rgba(255,59,92,.35)}
+.round.send.mic-mode{background:var(--panel);color:var(--primary);border:1px solid rgba(255,59,92,.35);box-shadow:none}
+.composer.recording .round.send{background:linear-gradient(135deg,#ff3b5c,#d11a42);color:#fff;transform:scale(1.18);box-shadow:0 0 22px rgba(255,59,92,.65)}
 
 /* ===== Secreto ===== */
 #view-secreto{background:var(--sec-bg)}
@@ -314,6 +354,10 @@ button{font-family:inherit}
 #view-secreto .composer input[type=text]{background:#120a1d;border-color:rgba(162,31,255,.2)}
 #view-secreto .composer input[type=text]:focus{border-color:rgba(162,31,255,.7)}
 #view-secreto .round.send{background:linear-gradient(135deg,var(--sec),var(--sec2));box-shadow:0 4px 16px rgba(162,31,255,.4)}
+#view-secreto .round.send.mic-mode{background:#120a1d;color:var(--sec);border:1px solid rgba(162,31,255,.35);box-shadow:none}
+#view-secreto .composer.recording .round.send{background:linear-gradient(135deg,var(--sec),var(--sec2));color:#fff;box-shadow:0 0 22px rgba(162,31,255,.65)}
+#view-secreto .rec-bar{background:#160a24;border-color:rgba(162,31,255,.5)}
+#view-secreto .rec-dot{background:var(--sec)}
 #view-secreto .round.attach,#view-secreto .round.sticker-btn{background:#120a1d;color:var(--sec);border-color:rgba(162,31,255,.25)}
 #view-secreto .round.sticker-btn.open{background:rgba(162,31,255,.22);border-color:var(--sec)}
 #view-secreto .sticker-tray{background:#0e0716;border-top-color:rgba(162,31,255,.2)}
@@ -448,11 +492,15 @@ button{font-family:inherit}
       <div class="tray-grid" id="tray-grid-chat"></div>
     </div>
     <div class="reply-bar" id="reply-chat"><i class="fa-solid fa-reply l"></i><span></span><i class="fa-solid fa-xmark x"></i></div>
-    <div class="composer">
+    <div class="composer" id="composer-chat">
       <button class="round attach" data-attach="chat" title="Enviar foto"><i class="fa-solid fa-camera"></i></button>
       <button class="round sticker-btn" data-sticker="chat" title="Figurinhas"><i class="fa-solid fa-note-sticky"></i></button>
-      <input type="text" id="input-chat" placeholder="Mensagem ou cole figurinha" enterkeyhint="send" autocomplete="off" autocorrect="on">
-      <button class="round send" data-send="chat"><i class="fa-solid fa-paper-plane"></i></button>
+      <div class="rec-bar" id="rec-bar-chat">
+        <div class="rec-left"><span class="rec-dot"></span><span id="rec-timer-chat">0:00</span></div>
+        <div class="rec-slide" id="rec-slide-chat">◀ Deslize para cancelar</div>
+      </div>
+      <input type="text" id="input-chat" placeholder="Mensagem" enterkeyhint="send" autocomplete="off" autocorrect="on">
+      <button class="round send mic-mode" id="action-chat" data-send="chat" title="Segure para gravar áudio"><i class="fa-solid fa-microphone"></i></button>
     </div>
   </div>
 
@@ -476,11 +524,15 @@ button{font-family:inherit}
       <div class="tray-grid" id="tray-grid-secreto"></div>
     </div>
     <div class="reply-bar" id="reply-secreto"><i class="fa-solid fa-reply l"></i><span></span><i class="fa-solid fa-xmark x"></i></div>
-    <div class="composer">
+    <div class="composer" id="composer-secreto">
       <button class="round attach" data-attach="secreto" title="Foto de visualização única"><i class="fa-solid fa-camera"></i></button>
       <button class="round sticker-btn" data-sticker="secreto" title="Figurinhas"><i class="fa-solid fa-note-sticky"></i></button>
+      <div class="rec-bar" id="rec-bar-secreto">
+        <div class="rec-left"><span class="rec-dot"></span><span id="rec-timer-secreto">0:00</span></div>
+        <div class="rec-slide" id="rec-slide-secreto">◀ Deslize para cancelar</div>
+      </div>
       <input type="text" id="input-secreto" placeholder="Mensagem secreta" enterkeyhint="send" autocomplete="off">
-      <button class="round send" data-send="secreto"><i class="fa-solid fa-paper-plane"></i></button>
+      <button class="round send mic-mode" id="action-secreto" data-send="secreto" title="Segure para gravar áudio"><i class="fa-solid fa-microphone"></i></button>
     </div>
   </div>
 
@@ -518,7 +570,7 @@ const LOCK_AFTER_MS = 60000;
 const PATH = { chat: 'chat', secreto: 'chat_secreto' };
 const STICKER_STORAGE_KEY = 'ne_recent_stickers_v1';
 const MAX_RECENT_STICKERS = 16;
-const DATA_INICIO = '2026-08-01'; // Altere para a data especial de vocês (AAAA-MM-DD)
+const DATA_INICIO = '2026-08-01';
 
 let eu = '', outro = '';
 let R = {};
@@ -530,7 +582,7 @@ let respondendo = null; // { chave, texto }
 let editando = null;    // { tab, chave }
 let hiddenAt = 0;
 let ultimoSwipeEm = 0;
-let ctxAlvo = null;     // { tab, m, resumo, mine }
+let ctxAlvo = null;
 const cache = { chat: [], secreto: [] };
 const lastReadSeen = { chat: 0, secreto: 0 };
 
@@ -564,6 +616,7 @@ function toast(msg) {
 }
 const vibrar = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
 const hhmm = ts => { const d = new Date(ts); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+const fmtSec = s => { const m = Math.floor(s / 60), r = Math.floor(s % 60); return `${m}:${String(r).padStart(2, '0')}`; };
 function diaLabel(ts) {
   const d = new Date(ts), h = new Date();
   const a = new Date(d.getFullYear(), d.getMonth(), d.getDate()), b = new Date(h.getFullYear(), h.getMonth(), h.getDate());
@@ -868,7 +921,7 @@ function verificarPin() {
 /* ---------- bloqueio ---------- */
 function bloquear() {
   if (!appReady) return;
-  locked = true; stopTyping(); fecharTodasBandejas(); fecharMenuContextual(); fecharBusca();
+  locked = true; stopTyping(); cancelarGravacao(); fecharTodasBandejas(); fecharMenuContextual(); fecharBusca();
   $('login').classList.remove('hide');
   $('app').style.display = 'none';
   setPresenca(false);
@@ -884,7 +937,7 @@ $('btn-lock').addEventListener('click', bloquear);
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
     $('shield').classList.add('show'); hiddenAt = Date.now();
-    if (appReady && !locked) { stopTyping(); setPresenca(false); }
+    if (appReady && !locked) { stopTyping(); cancelarGravacao(); setPresenca(false); }
   } else {
     $('shield').classList.remove('show');
     if (appReady && !locked) {
@@ -1029,7 +1082,7 @@ document.querySelector('.nav').addEventListener('click', e => {
   const it = e.target.closest('.nav-item'); if (it) mudarAba(it.dataset.tab);
 });
 function mudarAba(a) {
-  aba = a; cancelarResposta(); fecharTodasBandejas(); fecharMenuContextual(); fecharBusca(); stopTyping();
+  aba = a; cancelarResposta(); cancelarGravacao(); fecharTodasBandejas(); fecharMenuContextual(); fecharBusca(); stopTyping();
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   $('view-' + a).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => {
@@ -1098,8 +1151,87 @@ function destacarMensagem(tab, targetChave) {
   setTimeout(() => alvo.classList.remove('highlight'), 1700);
 }
 
-/* ---------- renderização do chat + Swipe to Reply + Toque Duplo ❤️ + Segurar Menu ---------- */
+/* ---------- renderização do chat + Player de Áudio + Gestos ---------- */
 const ehLink = ev => !!(ev.target && ev.target.closest && ev.target.closest('a.lnk'));
+let audioAtual = null, btnAudioAtual = null;
+
+function criarPlayerAudio(m) {
+  const box = el('div', 'voice-box');
+  const btn = el('button', 'voice-play');
+  btn.type = 'button';
+  btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+
+  const track = el('div', 'voice-track');
+  const bar = el('div', 'voice-bar');
+  const fill = el('div', 'voice-fill');
+  bar.appendChild(fill);
+
+  const durInicial = m.duracao || 0;
+  const timeLbl = el('span', 'voice-time', fmtSec(durInicial));
+  track.append(bar, timeLbl);
+  box.append(btn, track);
+
+  let audio = null;
+
+  const pararEste = () => {
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+    btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+    fill.style.width = '0%';
+    timeLbl.textContent = fmtSec(durInicial);
+  };
+
+  btn.addEventListener('click', ev => {
+    ev.stopPropagation();
+    if (Date.now() - ultimoSwipeEm < 300) return;
+
+    if (!audio) {
+      audio = new Audio(m.conteudo);
+      audio.preload = 'metadata';
+      audio.addEventListener('timeupdate', () => {
+        if (!audio.duration || isNaN(audio.duration)) return;
+        const pct = Math.min(100, (audio.currentTime / audio.duration) * 100);
+        fill.style.width = pct + '%';
+        timeLbl.textContent = fmtSec(audio.currentTime);
+      });
+      audio.addEventListener('ended', () => {
+        pararEste();
+        if (audioAtual === audio) { audioAtual = null; btnAudioAtual = null; }
+      });
+    }
+
+    if (!audio.paused) {
+      audio.pause();
+      btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+      return;
+    }
+
+    if (audioAtual && audioAtual !== audio) {
+      audioAtual.pause();
+      if (btnAudioAtual) btnAudioAtual.innerHTML = '<i class="fa-solid fa-play"></i>';
+    }
+
+    audioAtual = audio;
+    btnAudioAtual = btn;
+    btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+    audio.play().catch(() => {
+      btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+      toast('Não foi possível reproduzir o áudio');
+    });
+  });
+
+  bar.addEventListener('click', ev => {
+    ev.stopPropagation();
+    if (!audio || !audio.duration || isNaN(audio.duration)) return;
+    const rect = bar.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+    audio.currentTime = ratio * audio.duration;
+  });
+
+  return box;
+}
 
 function configurarGestosBolha(wrapper, bubble, swipeIcon, onSwipeReply, onDoubleTapLike, onLongMenu) {
   let startX = 0, startY = 0, dx = 0;
@@ -1195,8 +1327,7 @@ function configurarGestosBolha(wrapper, bubble, swipeIcon, onSwipeReply, onDoubl
       return;
     }
 
-    // Detecta toque duplo para reagir com ❤️
-    if (!eraSwipe && !longFired && !ehLink(ev) && onDoubleTapLike) {
+    if (!eraSwipe && !longFired && !ehLink(ev) && !ev.target.closest('.voice-play, .voice-bar') && onDoubleTapLike) {
       const agora = Date.now();
       if (agora - lastTapTime < 280) {
         lastTapTime = 0;
@@ -1293,6 +1424,9 @@ function renderTab(tab) {
       b.classList.add('bare');
       const img = el('img', 'sticker'); img.src = m.conteudo; img.loading = 'lazy';
       b.appendChild(img); resumo = '✨ Figurinha';
+    } else if (m.tipo === 'audio') {
+      b.appendChild(criarPlayerAudio(m));
+      resumo = `🎤 Áudio (${fmtSec(m.duracao || 0)})`;
     } else if (m.tipo === 'imagem_unica') {
       b.classList.add('bare');
       const aberta = m.aberta === true || !m.conteudo;
@@ -1375,6 +1509,7 @@ function iniciarEdicao(tab, m) {
   rb.querySelector('span').textContent = 'Editando: ' + (m.conteudo || '');
   const inp = $('input-' + tab);
   inp.value = m.conteudo || '';
+  atualizarBotaoAcao(tab);
   inp.focus();
 }
 function cancelarResposta() {
@@ -1384,6 +1519,7 @@ function cancelarResposta() {
     const rb = $('reply-' + t);
     rb.style.display = 'none';
     rb.querySelector('i.l').className = 'fa-solid fa-reply l';
+    atualizarBotaoAcao(t);
   });
 }
 document.querySelectorAll('.reply-bar .x').forEach(x => x.addEventListener('click', () => {
@@ -1391,7 +1527,154 @@ document.querySelectorAll('.reply-bar .x').forEach(x => x.addEventListener('clic
   cancelarResposta();
 }));
 
-/* ---------- envio ---------- */
+/* ---------- alternância Microfone / Enviar + Gravador de Voz ---------- */
+function atualizarBotaoAcao(tab) {
+  const inp = $('input-' + tab);
+  const btn = $('action-' + tab);
+  if (!inp || !btn) return;
+  const temTexto = inp.value.trim().length > 0;
+  if (temTexto) {
+    btn.classList.remove('mic-mode');
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+  } else {
+    btn.classList.add('mic-mode');
+    btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+  }
+}
+
+let recState = {
+  ativo: false,
+  tab: null,
+  stream: null,
+  recorder: null,
+  chunks: [],
+  inicio: 0,
+  timerInt: null,
+  startX: 0,
+  cancelado: false
+};
+
+function cancelarGravacao() {
+  if (!recState.ativo) return;
+  recState.cancelado = true;
+  clearInterval(recState.timerInt);
+  try { if (recState.recorder && recState.recorder.state !== 'inactive') recState.recorder.stop(); } catch (e) {}
+  try { if (recState.stream) recState.stream.getTracks().forEach(tr => tr.stop()); } catch (e) {}
+  if (recState.tab) {
+    $('composer-' + recState.tab).classList.remove('recording');
+    $('rec-slide-' + recState.tab).classList.remove('cancel-warn');
+    $('rec-slide-' + recState.tab).textContent = '◀ Deslize para cancelar';
+  }
+  recState = { ativo: false, tab: null, stream: null, recorder: null, chunks: [], inicio: 0, timerInt: null, startX: 0, cancelado: false };
+}
+
+async function iniciarGravacao(tab, clientX) {
+  if (recState.ativo) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') {
+    toast('Gravação de áudio não suportada neste navegador');
+    return;
+  }
+  fecharTodasBandejas();
+  recState.ativo = true;
+  recState.tab = tab;
+  recState.startX = clientX || 0;
+  recState.cancelado = false;
+  recState.chunks = [];
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    if (!recState.ativo || recState.cancelado) {
+      stream.getTracks().forEach(tr => tr.stop());
+      return;
+    }
+    recState.stream = stream;
+
+    const mimeCandidates = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg'];
+    const mimeType = mimeCandidates.find(m => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(m)) || '';
+    const recorder = new MediaRecorder(stream, mimeType ? { mimeType, audioBitsPerSecond: 32000 } : { audioBitsPerSecond: 32000 });
+    recState.recorder = recorder;
+    recState.inicio = Date.now();
+
+    $('composer-' + tab).classList.add('recording');
+    $('rec-timer-' + tab).textContent = '0:00';
+    vibrar(18);
+
+    recState.timerInt = setInterval(() => {
+      const segs = Math.floor((Date.now() - recState.inicio) / 1000);
+      $('rec-timer-' + tab).textContent = fmtSec(segs);
+      if (segs >= 60) finalizarGravacao(); // Limite de 60s para manter envio rápido no RTDB
+    }, 250);
+
+    recorder.ondataavailable = e => {
+      if (e.data && e.data.size > 0) recState.chunks.push(e.data);
+    };
+
+    recorder.onstop = () => {
+      const foiCancelado = recState.cancelado;
+      const duracaoSeg = Math.max(1, Math.round((Date.now() - recState.inicio) / 1000));
+      const chunks = recState.chunks.slice();
+      const tipoFinal = recorder.mimeType || mimeType || 'audio/mp4';
+
+      try { stream.getTracks().forEach(tr => tr.stop()); } catch (e) {}
+      $('composer-' + tab).classList.remove('recording');
+      $('rec-slide-' + tab).classList.remove('cancel-warn');
+      $('rec-slide-' + tab).textContent = '◀ Deslize para cancelar';
+      clearInterval(recState.timerInt);
+      recState.ativo = false;
+
+      if (foiCancelado) {
+        toast('Áudio cancelado');
+        return;
+      }
+      if (duracaoSeg < 1 || !chunks.length) {
+        toast('Segure o botão para gravar áudio');
+        return;
+      }
+
+      const blob = new Blob(chunks, { type: tipoFinal });
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const payload = {
+          sender: eu,
+          tipo: 'audio',
+          conteudo: ev.target.result,
+          duracao: duracaoSeg,
+          timestamp: serverTimestamp()
+        };
+        if (respondendo) {
+          payload.replyTo = respondendo.texto;
+          payload.replyId = respondendo.chave;
+        }
+        push(ref(db, PATH[tab]), payload);
+        cancelarResposta();
+        vibrar(15);
+        toast('🎤 Áudio enviado');
+      };
+      reader.readAsDataURL(blob);
+    };
+
+    recorder.start(200);
+  } catch (err) {
+    recState.ativo = false;
+    toast('Permita o acesso ao microfone para gravar');
+  }
+}
+
+function finalizarGravacao() {
+  if (!recState.ativo) return;
+  clearInterval(recState.timerInt);
+  try {
+    if (recState.recorder && recState.recorder.state !== 'inactive') {
+      recState.recorder.stop();
+    } else {
+      cancelarGravacao();
+    }
+  } catch (e) {
+    cancelarGravacao();
+  }
+}
+
+/* ---------- envio de texto e eventos do botão ação ---------- */
 function enviar(tab) {
   const input = $('input-' + tab);
   const texto = input.value.trim(); if (!texto) return;
@@ -1412,20 +1695,56 @@ function enviar(tab) {
   }
   push(ref(db, PATH[tab]), payload);
   input.value = ''; cancelarResposta(); stopTyping();
+  atualizarBotaoAcao(tab);
   input.focus();
 }
-document.querySelectorAll('[data-send]').forEach(b => {
-  b.addEventListener('pointerdown', e => e.preventDefault());
-  b.addEventListener('click', () => enviar(b.dataset.send));
-});
+
 ['chat', 'secreto'].forEach(t => {
-  const i = $('input-' + t);
-  i.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); enviar(t); } });
-  i.addEventListener('focus', () => fecharTodasBandejas());
-  i.addEventListener('input', onTyping);
+  const btn = $('action-' + t);
+  const inp = $('input-' + t);
+
+  btn.addEventListener('pointerdown', e => {
+    if (inp.value.trim().length > 0) {
+      e.preventDefault();
+      enviar(t);
+      return;
+    }
+    e.preventDefault();
+    iniciarGravacao(t, e.clientX);
+  });
+
+  btn.addEventListener('pointermove', e => {
+    if (!recState.ativo || recState.tab !== t) return;
+    const dx = e.clientX - recState.startX;
+    const slide = $('rec-slide-' + t);
+    if (dx < -65) {
+      slide.textContent = 'Solte para cancelar ✕';
+      slide.classList.add('cancel-warn');
+      recState.cancelado = true;
+    } else {
+      slide.textContent = '◀ Deslize para cancelar';
+      slide.classList.remove('cancel-warn');
+      recState.cancelado = false;
+    }
+  });
+
+  const soltar = () => {
+    if (!recState.ativo || recState.tab !== t) return;
+    if (recState.cancelado) cancelarGravacao();
+    else finalizarGravacao();
+  };
+  btn.addEventListener('pointerup', soltar);
+  btn.addEventListener('pointercancel', soltar);
+
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); enviar(t); } });
+  inp.addEventListener('focus', () => fecharTodasBandejas());
+  inp.addEventListener('input', () => {
+    atualizarBotaoAcao(t);
+    onTyping();
+  });
 
   // Captura figurinhas coladas diretamente do teclado/clipboard do iPhone
-  i.addEventListener('paste', e => {
+  inp.addEventListener('paste', e => {
     const items = (e.clipboardData || window.clipboardData)?.items;
     if (!items) return;
     for (const item of items) {

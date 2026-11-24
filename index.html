@@ -7,18 +7,18 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Espaço">
+<meta name="apple-mobile-web-app-title" content="Notas">
 <meta name="robots" content="noindex,nofollow">
-<title>Nosso Espaço</title>
+<title>Acesso</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <style>
 :root{
-  --bg:#09090c; --panel:#131318; --panel2:#1b1b23;
-  --primary:#ff3b5c; --primary2:#d11a42; --fire:#ff8a1f;
-  --text:#f2f2f5; --muted:#8b8b97;
-  --glass:rgba(19,19,24,.72); --line:rgba(255,255,255,.07);
-  --sec-bg:#050408; --sec:#a21fff; --sec2:#6c0fc0;
+  --bg:#08080b; --panel:#121217; --panel2:#1a1a22;
+  --primary:#ff3b5c; --primary2:#c9143b; --fire:#ff8a1f;
+  --text:#f4f4f7; --muted:#868694;
+  --glass:rgba(16,16,22,.78); --line:rgba(255,255,255,.08);
+  --sec-bg:#050408; --sec:#a21fff; --sec2:#680cb8;
   --sab:env(safe-area-inset-bottom,0px); --sat:env(safe-area-inset-top,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -26,61 +26,60 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:
 body{position:fixed;inset:0;height:var(--vh,100dvh);overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;display:flex;flex-direction:column}
 button{font-family:inherit}
 
-/* ===== Escudo de privacidade (troca de app) ===== */
-#shield{position:fixed;inset:0;z-index:99999;background:#000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--muted);font-size:14px}
+/* ===== Escudo de privacidade discreto ===== */
+#shield{position:fixed;inset:0;z-index:99999;background:#050507;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--muted);font-size:13px;letter-spacing:.3px}
 #shield.show{display:flex}
-#shield i{font-size:34px;color:var(--primary)}
+#shield i{font-size:28px;color:rgba(255,255,255,.35)}
 
-/* ===== Login ===== */
-#login{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px calc(24px) calc(24px + var(--sab));
-  background:radial-gradient(120% 70% at 50% 0%,#3a0a18 0%,#12060b 45%,var(--bg) 80%)}
+/* ===== Login Discreto ===== */
+#login{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 24px calc(24px + var(--sab));
+  background:radial-gradient(110% 65% at 50% 0%,#191922 0%,#0c0c10 50%,var(--bg) 85%)}
 #login.hide{display:none}
-.lock-icon{width:68px;height:68px;border-radius:22px;display:grid;place-items:center;font-size:26px;color:#fff;
-  background:linear-gradient(135deg,var(--primary),var(--primary2));box-shadow:0 10px 40px rgba(255,59,92,.35);margin-bottom:22px}
-#login h1{font-size:20px;font-weight:600;margin:0 0 6px}
-#login p{font-size:13px;color:var(--muted);margin:0 0 28px}
+.lock-icon{width:62px;height:62px;border-radius:20px;display:grid;place-items:center;font-size:22px;color:rgba(255,255,255,.85);
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);box-shadow:0 12px 32px rgba(0,0,0,.45);margin-bottom:20px}
+#login p{font-size:13px;color:var(--muted);margin:0 0 26px;letter-spacing:.2px}
 .dots{display:flex;gap:16px;margin-bottom:34px}
-.dot{width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(255,255,255,.3);transition:.15s}
-.dot.on{background:var(--primary);border-color:var(--primary);box-shadow:0 0 14px rgba(255,59,92,.7);transform:scale(1.1)}
+.dot{width:13px;height:13px;border-radius:50%;border:1.5px solid rgba(255,255,255,.28);transition:.18s cubic-bezier(.34,1.56,.64,1)}
+.dot.on{background:#fff;border-color:#fff;box-shadow:0 0 12px rgba(255,255,255,.55);transform:scale(1.15)}
 .dots.shake{animation:shake .4s}
 @keyframes shake{20%{transform:translateX(-10px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
 .keypad{display:grid;grid-template-columns:repeat(3,76px);gap:14px 22px}
-.key{height:76px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);font-size:26px;font-weight:400;cursor:pointer;display:grid;place-items:center;transition:.12s;backdrop-filter:blur(8px)}
-.key:active{background:rgba(255,59,92,.25);transform:scale(.92)}
+.key{height:76px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.035);color:var(--text);font-size:26px;font-weight:400;cursor:pointer;display:grid;place-items:center;transition:.12s;backdrop-filter:blur(10px)}
+.key:active{background:rgba(255,255,255,.16);transform:scale(.92)}
 .key.ghost{background:none;border:none;pointer-events:none}
-.key.del{font-size:20px;color:var(--muted)}
+.key.del{font-size:19px;color:var(--muted)}
 
 /* ===== App ===== */
 #app{display:none;flex-direction:column;flex:1;min-height:0}
-.app-header{padding:calc(12px + var(--sat)) 16px 12px;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;z-index:10}
-.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:19px;background:linear-gradient(135deg,#2b1018,#1a0a10);border:1px solid rgba(255,59,92,.35);position:relative;flex-shrink:0}
-.avatar .pres{position:absolute;right:0;bottom:0;width:11px;height:11px;border-radius:50%;background:#555;border:2px solid var(--bg)}
+.app-header{padding:calc(12px + var(--sat)) 16px 12px;background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;z-index:10}
+.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:19px;background:linear-gradient(135deg,#2e111a,#190a10);border:1px solid rgba(255,59,92,.38);box-shadow:0 4px 14px rgba(255,59,92,.15);position:relative;flex-shrink:0}
+.avatar .pres{position:absolute;right:0;bottom:0;width:11px;height:11px;border-radius:50%;background:#555;border:2px solid var(--bg);transition:.25s}
 .avatar .pres.on{background:#25e07a;box-shadow:0 0 8px #25e07a}
 .who{flex:1;min-width:0}
-.who b{display:block;font-size:16px;font-weight:600}
-.who span{display:block;font-size:12px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who b{display:block;font-size:16px;font-weight:600;letter-spacing:-.2px}
+.who span{display:block;font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .who span.online{color:#25e07a}
-.who span.typing{color:var(--primary)}
-.icon-btn{width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.05);color:var(--muted);font-size:15px;cursor:pointer;transition:.15s}
-.icon-btn:active{transform:scale(.88);background:rgba(255,255,255,.1)}
+.who span.typing{color:var(--primary);font-weight:500}
+.icon-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-size:14px;cursor:pointer;transition:.15s}
+.icon-btn:active{transform:scale(.88);background:rgba(255,255,255,.12);color:#fff}
 
 .view{display:none;flex:1;min-height:0;flex-direction:column}
 .view.active{display:flex}
 
 /* ===== Sintonia ===== */
 #view-sintonia{align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden;
-  background:radial-gradient(70% 50% at 50% 42%,var(--aura,rgba(255,255,255,.04)) 0%,transparent 70%)}
-#view-sintonia[data-s=beating]{--aura:rgba(255,59,92,.22)}
-#view-sintonia[data-s=sync]{--aura:rgba(255,120,30,.25)}
-#view-sintonia[data-s=waiting]{--aura:rgba(255,59,92,.1)}
+  background:radial-gradient(75% 55% at 50% 42%,var(--aura,rgba(255,255,255,.04)) 0%,transparent 72%)}
+#view-sintonia[data-s=beating]{--aura:rgba(255,59,92,.24)}
+#view-sintonia[data-s=sync]{--aura:rgba(255,120,30,.26)}
+#view-sintonia[data-s=waiting]{--aura:rgba(255,59,92,.12)}
 .heart-stage{position:relative;width:230px;height:230px;display:grid;place-items:center;cursor:pointer}
 .ring{position:absolute;inset:25px;border-radius:50%;border:2px solid var(--primary);opacity:0}
 .heart-svg{width:150px;height:150px;overflow:visible;transition:transform .2s cubic-bezier(.34,1.56,.64,1);position:relative;z-index:2}
 .heart-svg path{fill:rgba(255,255,255,.05);stroke:rgba(255,255,255,.4);stroke-width:.7;transition:fill .5s,stroke .5s,filter .5s}
 .heart-stage:active .heart-svg{transform:scale(.9)}
-[data-s=waiting] .heart-svg path{fill:rgba(255,59,92,.28);stroke:var(--primary);filter:drop-shadow(0 0 10px rgba(255,59,92,.5))}
+[data-s=waiting] .heart-svg path{fill:rgba(255,59,92,.28);stroke:var(--primary);filter:drop-shadow(0 0 12px rgba(255,59,92,.55))}
 [data-s=beating] .heart-svg{animation:beat 1.05s ease-in-out infinite}
-[data-s=beating] .heart-svg path{fill:url(#gRed);stroke:#ff8aa0;stroke-width:.4;filter:drop-shadow(0 0 22px rgba(255,59,92,.8))}
+[data-s=beating] .heart-svg path{fill:url(#gRed);stroke:#ff8aa0;stroke-width:.4;filter:drop-shadow(0 0 24px rgba(255,59,92,.85))}
 [data-s=beating] .ring{animation:ring 2.1s ease-out infinite}
 [data-s=beating] .ring:nth-child(2){animation-delay:1.05s}
 [data-s=sync] .heart-svg{animation:fire 1.3s ease-in-out infinite alternate}
@@ -91,22 +90,38 @@ button{font-family:inherit}
 @keyframes fire{0%{transform:scale(1);filter:drop-shadow(0 0 18px rgba(255,120,0,.5))}100%{transform:scale(1.08);filter:drop-shadow(0 0 46px rgba(255,60,0,.95))}}
 @keyframes ring{0%{transform:scale(.7);opacity:.7}100%{transform:scale(1.75);opacity:0}}
 .sint-text{margin-top:26px;text-align:center;min-height:84px;padding:0 10px}
-.sint-text strong{display:block;font-size:19px;font-weight:600;margin-bottom:6px}
+.sint-text strong{display:block;font-size:19px;font-weight:600;margin-bottom:6px;letter-spacing:-.2px}
 .sint-text span{font-size:14px;color:var(--muted);line-height:1.5}
-.hint-chip{margin-top:6px;font-size:12px;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--line);padding:8px 14px;border-radius:20px}
+.hint-chip{margin-top:6px;font-size:12px;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--line);padding:8px 16px;border-radius:20px;backdrop-filter:blur(8px)}
 .hint-chip b{color:var(--text);font-weight:600}
-.stats{position:absolute;bottom:18px;left:0;right:0;display:flex;justify-content:center;gap:26px;font-size:12px;color:var(--muted)}
-.stats b{color:var(--text);font-size:15px;margin-right:4px}
+.stats{position:absolute;bottom:18px;left:0;right:0;display:flex;justify-content:center;gap:28px;font-size:12px;color:var(--muted);background:rgba(255,255,255,.03);width:fit-content;margin:0 auto;padding:8px 20px;border-radius:20px;border:1px solid var(--line)}
+.stats b{color:var(--text);font-size:14px;margin-right:5px}
 .mini-heart{position:fixed;pointer-events:none;z-index:60;font-size:22px;animation:miniUp var(--d,2s) ease-out forwards}
 @keyframes miniUp{0%{opacity:0;transform:translate(0,0) scale(.4)}15%{opacity:1}100%{opacity:0;transform:translate(var(--x,0),-260px) scale(1.2) rotate(var(--r,0deg))}}
 
 /* ===== Chat & Swipe to Reply ===== */
-.messages{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:14px 12px 8px;display:flex;flex-direction:column;gap:3px;-webkit-overflow-scrolling:touch;scroll-behavior:auto}
-.day{align-self:center;font-size:11px;color:var(--muted);background:rgba(255,255,255,.05);padding:4px 12px;border-radius:12px;margin:12px 0 8px;font-weight:500}
-.mw{display:flex;flex-direction:column;max-width:82%;position:relative;touch-action:pan-y}
+.messages{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:14px 12px 10px;display:flex;flex-direction:column;gap:3px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+.day{align-self:center;font-size:11px;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--line);padding:4px 12px;border-radius:12px;margin:12px 0 8px;font-weight:500}
+.mw{display:flex;flex-direction:column;max-width:82%;position:relative;touch-action:pan-y;border-radius:18px;transition:background .3s}
 .mw.mine{align-self:flex-end;align-items:flex-end}
 .mw.theirs{align-self:flex-start;align-items:flex-start}
-.mw.first{margin-top:7px}
+.mw.first{margin-top:8px}
+
+/* Destaque ao clicar na mensagem respondida */
+.mw.highlight .bubble{animation:msgHighlight 1.6s ease-out}
+@keyframes msgHighlight{
+  0%{box-shadow:0 0 0 0 rgba(255,59,92,0);filter:brightness(1)}
+  20%{box-shadow:0 0 0 4px rgba(255,59,92,.65),0 0 26px rgba(255,59,92,.45);filter:brightness(1.28);transform:scale(1.02)}
+  60%{box-shadow:0 0 0 3px rgba(255,59,92,.35);filter:brightness(1.12);transform:scale(1)}
+  100%{box-shadow:none;filter:brightness(1)}
+}
+#view-secreto .mw.highlight .bubble{animation:secHighlight 1.6s ease-out}
+@keyframes secHighlight{
+  0%{box-shadow:0 0 0 0 rgba(162,31,255,0);filter:brightness(1)}
+  20%{box-shadow:0 0 0 4px rgba(162,31,255,.7),0 0 26px rgba(162,31,255,.5);filter:brightness(1.3);transform:scale(1.02)}
+  60%{box-shadow:0 0 0 3px rgba(162,31,255,.35);filter:brightness(1.12);transform:scale(1)}
+  100%{box-shadow:none;filter:brightness(1)}
+}
 
 /* Ícone que aparece atrás ao arrastar para o lado */
 .swipe-icon{
@@ -119,18 +134,26 @@ button{font-family:inherit}
 .swipe-icon.ready{background:var(--primary);color:#fff}
 #view-secreto .swipe-icon.ready{background:var(--sec);color:#fff}
 
-.bubble{padding:8px 12px 6px;border-radius:18px;font-size:15px;line-height:1.38;word-break:break-word;overflow-wrap:anywhere;white-space:pre-wrap;position:relative;animation:pop .22s ease-out;will-change:transform}
+.bubble{padding:9px 13px 7px;border-radius:18px;font-size:15px;line-height:1.4;word-break:break-word;overflow-wrap:anywhere;white-space:pre-wrap;position:relative;animation:pop .22s ease-out;will-change:transform;touch-action:pan-y}
 @keyframes pop{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}
-.mine .bubble{background:linear-gradient(135deg,#ff3b5c,#e0204a);color:#fff;border-bottom-right-radius:5px}
+.mine .bubble{background:linear-gradient(135deg,#ff3b5c,#dc1c45);color:#fff;border-bottom-right-radius:5px;box-shadow:0 3px 12px rgba(255,59,92,.18)}
 .theirs .bubble{background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:5px}
 .mine.grouped .bubble{border-top-right-radius:7px}
 .theirs.grouped .bubble{border-top-left-radius:7px}
-.bubble .meta{display:flex;justify-content:flex-end;align-items:center;gap:5px;font-size:10px;opacity:.65;margin-top:2px;white-space:normal}
+.bubble .meta{display:flex;justify-content:flex-end;align-items:center;gap:5px;font-size:10px;opacity:.68;margin-top:3px;white-space:normal}
 .bubble .meta .read{color:#8de3ff;opacity:1}
-.bubble.bare{background:none!important;border:none!important;padding:0}
-.bubble.bare .meta{padding:3px 4px 0}
-.bubble img{display:block;width:210px;max-width:100%;height:auto;max-height:280px;object-fit:cover;border-radius:14px}
-.reply-ref{display:block;background:rgba(0,0,0,.22);border-left:3px solid rgba(255,255,255,.55);border-radius:8px;padding:5px 9px;margin-bottom:5px;font-size:12px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+
+/* Mídia e Figurinhas */
+.bubble.bare{background:none!important;border:none!important;padding:0;box-shadow:none!important}
+.bubble.bare .meta{padding:4px 6px 0;background:rgba(0,0,0,.35);border-radius:10px;width:fit-content;margin-left:auto;margin-top:4px}
+.bubble img.photo{display:block;width:215px;max-width:100%;height:auto;max-height:280px;object-fit:cover;border-radius:16px;border:1px solid rgba(255,255,255,.1);pointer-events:auto;-webkit-user-drag:none}
+.bubble img.sticker{display:block;width:155px;height:155px;object-fit:contain;background:transparent;border:none;border-radius:8px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));pointer-events:auto;-webkit-user-drag:none}
+
+/* Citação clicável */
+.reply-ref{display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.24);border-left:3px solid rgba(255,255,255,.65);border-radius:8px;padding:6px 10px;margin-bottom:6px;font-size:12px;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px;cursor:pointer;transition:.15s}
+.reply-ref:active{opacity:.65;transform:scale(.98)}
+.reply-ref i{font-size:10px;opacity:.75;flex-shrink:0}
+.bubble.bare .reply-ref{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--primary);margin-bottom:4px}
 
 /* Links 100% clicáveis */
 .bubble a.lnk{
@@ -156,23 +179,24 @@ button{font-family:inherit}
 .reply-bar i.l{color:var(--primary)}
 .reply-bar span{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--text)}
 .reply-bar .x{padding:6px;cursor:pointer}
-.composer{display:flex;align-items:flex-end;gap:8px;padding:8px 12px 10px;background:var(--bg);border-top:1px solid var(--line)}
-.composer input[type=text]{flex:1;min-width:0;padding:12px 16px;border-radius:22px;background:var(--panel);color:var(--text);border:1px solid var(--line);font-size:16px;font-family:inherit;outline:none;-webkit-user-select:text;user-select:text;transition:.2s}
-.composer input[type=text]:focus{border-color:rgba(255,59,92,.5)}
-.round{width:44px;height:44px;border-radius:50%;border:none;display:grid;place-items:center;font-size:17px;cursor:pointer;flex-shrink:0;transition:.15s}
+.composer{display:flex;align-items:flex-end;gap:7px;padding:8px 10px 10px;background:var(--bg);border-top:1px solid var(--line)}
+.composer input[type=text]{flex:1;min-width:0;padding:11px 15px;border-radius:22px;background:var(--panel);color:var(--text);border:1px solid var(--line);font-size:16px;font-family:inherit;outline:none;-webkit-user-select:text;user-select:text;transition:.2s}
+.composer input[type=text]:focus{border-color:rgba(255,59,92,.55);background:#16161d}
+.round{width:42px;height:42px;border-radius:50%;border:none;display:grid;place-items:center;font-size:16px;cursor:pointer;flex-shrink:0;transition:.15s}
 .round:active{transform:scale(.88)}
 .round.attach{background:var(--panel);color:var(--muted);border:1px solid var(--line)}
+.round.sticker-btn{background:var(--panel);color:#ffb347;border:1px solid var(--line)}
 .round.send{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 4px 16px rgba(255,59,92,.35)}
 
 /* ===== Secreto ===== */
 #view-secreto{background:var(--sec-bg)}
-#view-secreto .mine .bubble{background:linear-gradient(135deg,var(--sec),var(--sec2))}
+#view-secreto .mine .bubble{background:linear-gradient(135deg,var(--sec),var(--sec2));box-shadow:0 3px 12px rgba(162,31,255,.22)}
 #view-secreto .theirs .bubble{background:#150a24;border-color:rgba(162,31,255,.22)}
 #view-secreto .composer,#view-secreto .quick{background:var(--sec-bg)}
 #view-secreto .composer input[type=text]{background:#120a1d;border-color:rgba(162,31,255,.2)}
 #view-secreto .composer input[type=text]:focus{border-color:rgba(162,31,255,.7)}
 #view-secreto .round.send{background:linear-gradient(135deg,var(--sec),var(--sec2));box-shadow:0 4px 16px rgba(162,31,255,.4)}
-#view-secreto .round.attach{background:#120a1d;color:var(--sec);border-color:rgba(162,31,255,.25)}
+#view-secreto .round.attach,#view-secreto .round.sticker-btn{background:#120a1d;color:var(--sec);border-color:rgba(162,31,255,.25)}
 #view-secreto .reply-bar{background:#100818}
 #view-secreto .reply-bar i.l{color:var(--sec)}
 #view-secreto .day{background:rgba(162,31,255,.1);color:#b98aff}
@@ -190,7 +214,7 @@ button{font-family:inherit}
 .once.opened i{color:#666}
 
 /* ===== Nav ===== */
-.nav{display:flex;background:var(--panel);border-top:1px solid var(--line);padding:8px 8px calc(8px + var(--sab))}
+.nav{display:flex;background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid var(--line);padding:8px 8px calc(8px + var(--sab))}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:11px;font-weight:500;padding:4px 0;cursor:pointer;position:relative;transition:.2s}
 .nav-item i{font-size:20px;transition:.2s}
 .nav-item.active{color:var(--primary)}
@@ -211,13 +235,13 @@ button{font-family:inherit}
 
 .floating-emoji{position:fixed;bottom:130px;font-size:40px;pointer-events:none;z-index:70;animation:floatUp 3s cubic-bezier(.25,1,.5,1) forwards}
 @keyframes floatUp{0%{opacity:0;transform:translateY(20px) scale(.5)}20%{opacity:1;transform:translateY(0) scale(1.25)}100%{opacity:0;transform:translateY(-420px) scale(1)}}
-#toast{position:fixed;left:50%;bottom:calc(110px + var(--sab));transform:translate(-50%,10px);background:rgba(30,30,38,.95);border:1px solid var(--line);color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;z-index:10000;opacity:0;transition:.3s;pointer-events:none;max-width:88%;text-align:center;backdrop-filter:blur(10px)}
+#toast{position:fixed;left:50%;bottom:calc(110px + var(--sab));transform:translate(-50%,10px);background:rgba(24,24,32,.96);border:1px solid rgba(255,255,255,.12);color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;z-index:10000;opacity:0;transition:.3s;pointer-events:none;max-width:88%;text-align:center;backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 </style>
 </head>
 <body>
 
-<div id="shield"><i class="fa-solid fa-lock"></i><span>Nosso Espaço</span></div>
+<div id="shield"><i class="fa-solid fa-lock"></i><span>Bloqueado</span></div>
 
 <div id="viewer">
   <div class="vt" id="viewer-title"></div>
@@ -234,10 +258,10 @@ button{font-family:inherit}
   </defs>
 </svg>
 
+<!-- Tela de Login Discreta -->
 <div id="login">
-  <div class="lock-icon"><i class="fa-solid fa-heart"></i></div>
-  <h1>Nosso Espaço</h1>
-  <p>Digite o seu código</p>
+  <div class="lock-icon"><i class="fa-solid fa-lock"></i></div>
+  <p>Digite a senha</p>
   <div class="dots" id="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
   <div class="keypad" id="keypad"></div>
 </div>
@@ -266,8 +290,9 @@ button{font-family:inherit}
     </div>
     <div class="reply-bar" id="reply-chat"><i class="fa-solid fa-reply l"></i><span></span><i class="fa-solid fa-xmark x"></i></div>
     <div class="composer">
-      <button class="round attach" data-attach="chat"><i class="fa-solid fa-camera"></i></button>
-      <input type="text" id="input-chat" placeholder="Mensagem" enterkeyhint="send" autocomplete="off" autocorrect="on">
+      <button class="round attach" data-attach="chat" title="Enviar foto"><i class="fa-solid fa-camera"></i></button>
+      <button class="round sticker-btn" data-sticker="chat" title="Enviar figurinha"><i class="fa-solid fa-note-sticky"></i></button>
+      <input type="text" id="input-chat" placeholder="Mensagem ou cole figurinha" enterkeyhint="send" autocomplete="off" autocorrect="on">
       <button class="round send" data-send="chat"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
   </div>
@@ -281,6 +306,7 @@ button{font-family:inherit}
     <div class="reply-bar" id="reply-secreto"><i class="fa-solid fa-reply l"></i><span></span><i class="fa-solid fa-xmark x"></i></div>
     <div class="composer">
       <button class="round attach" data-attach="secreto" title="Foto de visualização única"><i class="fa-solid fa-camera"></i></button>
+      <button class="round sticker-btn" data-sticker="secreto" title="Enviar figurinha"><i class="fa-solid fa-note-sticky"></i></button>
       <input type="text" id="input-secreto" placeholder="Mensagem secreta" enterkeyhint="send" autocomplete="off">
       <button class="round send" data-send="secreto"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
@@ -288,6 +314,8 @@ button{font-family:inherit}
 
   <input type="file" id="file-chat" accept="image/*" hidden>
   <input type="file" id="file-secreto" accept="image/*" hidden>
+  <input type="file" id="sticker-file-chat" accept="image/webp,image/png,image/gif,image/*" hidden>
+  <input type="file" id="sticker-file-secreto" accept="image/webp,image/png,image/gif,image/*" hidden>
 
   <div class="nav">
     <div class="nav-item active" data-tab="sintonia"><i class="fa-solid fa-heart-pulse"></i><span>Sintonia</span><b class="badge dot" id="bd-sintonia"></b></div>
@@ -323,8 +351,9 @@ let appReady = false, locked = true;
 let meu = { state: 'idle', online: false };
 let par = { state: 'idle', online: false };
 let aba = 'sintonia';
-let respondendo = null;
+let respondendo = null; // { chave, texto }
 let hiddenAt = 0;
+let ultimoSwipeEm = 0;
 const cache = { chat: [], secreto: [] };
 const lastReadSeen = { chat: 0, secreto: 0 };
 
@@ -342,7 +371,7 @@ fitViewport();
 /* ---------- utilidades ---------- */
 function toast(msg) {
   const t = $('toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2400);
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2500);
 }
 const vibrar = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
 const hhmm = ts => { const d = new Date(ts); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
@@ -378,13 +407,6 @@ function rotuloUrl(u) {
   let txt = u.hostname.replace(/^www\./, '') + (u.pathname !== '/' ? u.pathname : '');
   if (txt.length > 38) txt = txt.slice(0, 37) + '…';
   return txt;
-}
-function abrirLink(url) {
-  const a = document.createElement('a');
-  a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
-  a.style.display = 'none';
-  document.body.appendChild(a); a.click();
-  setTimeout(() => a.remove(), 500);
 }
 function adicionarTexto(container, texto) {
   if (!texto) return;
@@ -625,7 +647,24 @@ function atualizarBadges() {
   $('bd-sintonia').classList.toggle('show', par.state === 'pensando' && aba !== 'sintonia');
 }
 
-/* ---------- renderização do chat + Swipe to Reply ---------- */
+/* ---------- destacar mensagem original ao clicar na resposta ---------- */
+function destacarMensagem(tab, targetChave) {
+  if (!targetChave) return;
+  const area = $('messages-' + tab);
+  const alvo = area.querySelector(`[data-msg-id="${CSS.escape(targetChave)}"]`);
+  if (!alvo) {
+    toast('Mensagem original não está mais visível');
+    return;
+  }
+  alvo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  alvo.classList.remove('highlight');
+  void alvo.offsetWidth; // força reinício da animação
+  alvo.classList.add('highlight');
+  vibrar(15);
+  setTimeout(() => alvo.classList.remove('highlight'), 1700);
+}
+
+/* ---------- renderização do chat + Swipe to Reply (inclui imagens) ---------- */
 function scrollBottom(t, force) {
   const a = $('messages-' + t); if (!a) return;
   requestAnimationFrame(() => { a.scrollTop = a.scrollHeight; });
@@ -633,16 +672,15 @@ function scrollBottom(t, force) {
 
 const ehLink = ev => !!(ev.target && ev.target.closest && ev.target.closest('a.lnk'));
 
-// Gestos da bolha: arrastar para direita = responder | segurar = apagar (se for sua)
 function configurarGestosBolha(wrapper, bubble, swipeIcon, onSwipeReply, onLongDelete) {
   let startX = 0, startY = 0, dx = 0;
   let tracking = false, swiping = false, vibrado = false;
   let longTimer = null, longFired = false;
-  const THRESHOLD = 54;
+  const THRESHOLD = 52;
 
   const limparTimer = () => { if (longTimer) { clearTimeout(longTimer); longTimer = null; } };
 
-  bubble.addEventListener('touchstart', ev => {
+  const onStart = ev => {
     if (ev.touches.length !== 1) return;
     const t = ev.touches[0];
     startX = t.clientX;
@@ -664,30 +702,31 @@ function configurarGestosBolha(wrapper, bubble, swipeIcon, onSwipeReply, onLongD
         onLongDelete();
       }, 600);
     }
-  }, { passive: true });
+  };
 
-  bubble.addEventListener('touchmove', ev => {
+  const onMove = ev => {
     if (!tracking || ev.touches.length !== 1) return;
     const t = ev.touches[0];
     const diffX = t.clientX - startX;
     const diffY = t.clientY - startY;
 
-    // Se moveu o dedo, cancela o toque longo de apagar
-    if (Math.abs(diffX) > 8 || Math.abs(diffY) > 8) limparTimer();
+    if (Math.abs(diffX) > 7 || Math.abs(diffY) > 7) limparTimer();
 
     if (!swiping) {
-      // Se rolou na vertical ou arrastou para a esquerda, libera o scroll normal
       if (Math.abs(diffY) > Math.abs(diffX) || diffX < 0) {
         tracking = false;
         return;
       }
-      if (diffX > 10) swiping = true;
+      if (diffX > 8) {
+        swiping = true;
+        ultimoSwipeEm = Date.now();
+      }
     }
 
     if (swiping) {
       if (ev.cancelable) ev.preventDefault();
-      // Resistência elástica estilo WhatsApp
-      dx = Math.min(82, diffX * 0.72);
+      ultimoSwipeEm = Date.now();
+      dx = Math.min(82, diffX * 0.75);
       bubble.style.transform = `translateX(${dx}px)`;
 
       const prog = Math.min(1, dx / THRESHOLD);
@@ -703,12 +742,13 @@ function configurarGestosBolha(wrapper, bubble, swipeIcon, onSwipeReply, onLongD
         swipeIcon.classList.remove('ready');
       }
     }
-  }, { passive: false });
+  };
 
   const finalizarToque = () => {
     limparTimer();
     if (!tracking && !swiping) return;
     const disparar = swiping && dx >= THRESHOLD;
+    if (swiping) ultimoSwipeEm = Date.now();
     tracking = false;
     swiping = false;
 
@@ -720,14 +760,16 @@ function configurarGestosBolha(wrapper, bubble, swipeIcon, onSwipeReply, onLongD
     swipeIcon.classList.remove('ready');
 
     if (disparar && onSwipeReply) {
-      setTimeout(() => onSwipeReply(), 90);
+      setTimeout(() => onSwipeReply(), 80);
     }
   };
 
-  bubble.addEventListener('touchend', finalizarToque);
-  bubble.addEventListener('touchcancel', finalizarToque);
+  // Escuta no wrapper e na bolha para funcionar perfeitamente também sobre imagens e figurinhas
+  wrapper.addEventListener('touchstart', onStart, { passive: true });
+  wrapper.addEventListener('touchmove', onMove, { passive: false });
+  wrapper.addEventListener('touchend', finalizarToque);
+  wrapper.addEventListener('touchcancel', finalizarToque);
 
-  // Suporte também para clique direito no desktop apagar
   bubble.addEventListener('contextmenu', e => {
     if (ehLink(e)) return;
     e.preventDefault();
@@ -759,21 +801,47 @@ function renderTab(tab) {
     senderAnt = m.sender; tsAnt = ts;
 
     const w = el('div', 'mw ' + (mine ? 'mine' : 'theirs') + (agrup ? ' grouped' : ' first'));
+    w.dataset.msgId = m.chave;
+
     const swipeIcon = el('div', 'swipe-icon');
     swipeIcon.innerHTML = '<i class="fa-solid fa-reply"></i>';
     w.appendChild(swipeIcon);
 
     const b = el('div', 'bubble');
-    if (m.replyTo) b.appendChild(el('span', 'reply-ref', m.replyTo));
+    if (m.replyTo) {
+      const refBox = el('span', 'reply-ref');
+      refBox.innerHTML = '<i class="fa-solid fa-reply"></i>';
+      refBox.appendChild(document.createTextNode(m.replyTo));
+      refBox.addEventListener('click', ev => {
+        ev.stopPropagation();
+        if (Date.now() - ultimoSwipeEm < 300) return;
+        if (m.replyId) {
+          destacarMensagem(tab, m.replyId);
+        } else {
+          // Compatibilidade com mensagens antigas sem replyId
+          const antiga = cache[tab].find(x => (x.conteudo === m.replyTo) || (m.replyTo === '📷 Foto' && x.tipo === 'imagem') || (m.replyTo === '✨ Figurinha' && x.tipo === 'figurinha'));
+          if (antiga) destacarMensagem(tab, antiga.chave);
+        }
+      });
+      b.appendChild(refBox);
+    }
 
     let resumo = m.conteudo;
     let podeResponder = true;
 
     if (m.tipo === 'imagem') {
       b.classList.add('bare');
-      const img = el('img'); img.src = m.conteudo; img.loading = 'lazy';
-      img.addEventListener('click', ev => { ev.stopPropagation(); abrirViewer(m.conteudo, ''); });
+      const img = el('img', 'photo'); img.src = m.conteudo; img.loading = 'lazy';
+      img.addEventListener('click', ev => {
+        ev.stopPropagation();
+        if (Date.now() - ultimoSwipeEm < 300) return;
+        abrirViewer(m.conteudo, '');
+      });
       b.appendChild(img); resumo = '📷 Foto';
+    } else if (m.tipo === 'figurinha') {
+      b.classList.add('bare');
+      const img = el('img', 'sticker'); img.src = m.conteudo; img.loading = 'lazy';
+      b.appendChild(img); resumo = '✨ Figurinha';
     } else if (m.tipo === 'imagem_unica') {
       b.classList.add('bare');
       const aberta = m.aberta === true || !m.conteudo;
@@ -784,7 +852,13 @@ function renderTab(tab) {
       else txt = mine ? 'Foto enviada\naguardando ver' : 'Toque para ver\nsó uma vez';
       const sp = el('span', null, txt); sp.style.whiteSpace = 'pre-line';
       box.append(ic, sp);
-      if (!aberta && !mine) box.addEventListener('click', ev => { ev.stopPropagation(); abrirFotoUnica(m); });
+      if (!aberta && !mine) {
+        box.addEventListener('click', ev => {
+          ev.stopPropagation();
+          if (Date.now() - ultimoSwipeEm < 300) return;
+          abrirFotoUnica(m);
+        });
+      }
       b.appendChild(box); resumo = '📷 Foto única';
       if (aberta) podeResponder = false;
     } else {
@@ -804,7 +878,7 @@ function renderTab(tab) {
       w,
       b,
       swipeIcon,
-      podeResponder ? () => iniciarResposta(resumo) : null,
+      podeResponder ? () => iniciarResposta({ chave: m.chave, texto: resumo }) : null,
       mine ? () => { if (confirm('Apagar esta mensagem para os dois?')) remove(ref(db, `${PATH[tab]}/${m.chave}`)); } : null
     );
 
@@ -814,11 +888,11 @@ function renderTab(tab) {
 }
 
 /* ---------- resposta ---------- */
-function iniciarResposta(texto) {
+function iniciarResposta(obj) {
   if (aba === 'sintonia') return;
-  respondendo = texto;
+  respondendo = obj;
   const rb = $('reply-' + aba); rb.style.display = 'flex';
-  rb.querySelector('span').textContent = texto;
+  rb.querySelector('span').textContent = obj.texto;
   $('input-' + aba).focus();
 }
 function cancelarResposta() {
@@ -832,7 +906,10 @@ function enviar(tab) {
   const input = $('input-' + tab);
   const texto = input.value.trim(); if (!texto) return;
   const payload = { sender: eu, tipo: 'texto', conteudo: texto, timestamp: serverTimestamp() };
-  if (respondendo) payload.replyTo = respondendo;
+  if (respondendo) {
+    payload.replyTo = respondendo.texto;
+    payload.replyId = respondendo.chave;
+  }
   push(ref(db, PATH[tab]), payload);
   input.value = ''; cancelarResposta(); stopTyping();
   input.focus();
@@ -845,6 +922,20 @@ document.querySelectorAll('[data-send]').forEach(b => {
   const i = $('input-' + t);
   i.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); enviar(t); } });
   i.addEventListener('input', onTyping);
+
+  // Captura figurinhas coladas diretamente do teclado/clipboard do iPhone
+  i.addEventListener('paste', e => {
+    const items = (e.clipboardData || window.clipboardData)?.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type && item.type.startsWith('image/')) {
+        e.preventDefault();
+        const blob = item.getAsFile();
+        if (blob) enviarArquivoComoFigurinha(blob, t);
+        return;
+      }
+    }
+  });
 });
 
 let typing = false, typingT = null;
@@ -857,12 +948,77 @@ function stopTyping() {
   if (typing) { typing = false; if (R.meu) update(R.meu, { typing: false }); }
 }
 
-/* ---------- fotos ---------- */
+/* ---------- fotos e figurinhas do iPhone ---------- */
 document.querySelectorAll('[data-attach]').forEach(b => b.addEventListener('click', () => {
   if (b.dataset.attach === 'secreto') toast('📸 A foto será de visualização única');
   $('file-' + b.dataset.attach).click();
 }));
-['chat', 'secreto'].forEach(t => $('file-' + t).addEventListener('change', e => processarImagem(e, t)));
+
+// Botão de figurinha: tenta ler figurinha copiada do iPhone ou abre seletor
+document.querySelectorAll('[data-sticker]').forEach(b => b.addEventListener('click', async () => {
+  const tab = b.dataset.sticker;
+  if (navigator.clipboard && navigator.clipboard.read) {
+    try {
+      const items = await navigator.clipboard.read();
+      for (const item of items) {
+        const imgType = item.types.find(tp => tp.startsWith('image/'));
+        if (imgType) {
+          const blob = await item.getType(imgType);
+          enviarArquivoComoFigurinha(blob, tab);
+          return;
+        }
+      }
+    } catch (err) {
+      // Sem permissão de clipboard ou vazio -> abre seletor de arquivo
+    }
+  }
+  toast('✨ Escolha a figurinha ou cole no campo de texto');
+  $('sticker-file-' + tab).click();
+}));
+
+['chat', 'secreto'].forEach(t => {
+  $('file-' + t).addEventListener('change', e => processarImagem(e, t));
+  $('sticker-file-' + t).addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) enviarArquivoComoFigurinha(file, t);
+    e.target.value = '';
+  });
+});
+
+function enviarArquivoComoFigurinha(fileOrBlob, tab) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 380;
+      let w = img.width, h = img.height;
+      if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } }
+      else { if (h > MAX) { w *= MAX / h; h = MAX; } }
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const ctx = c.getContext('2d');
+      ctx.clearRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      // WebP ou PNG preserva a transparência das figurinhas do iPhone
+      let dataUrl = c.toDataURL('image/webp', 0.82);
+      if (!dataUrl.startsWith('data:image/webp')) {
+        dataUrl = c.toDataURL('image/png');
+      }
+      const payload = { sender: eu, tipo: 'figurinha', conteudo: dataUrl, timestamp: serverTimestamp() };
+      if (respondendo) {
+        payload.replyTo = respondendo.texto;
+        payload.replyId = respondendo.chave;
+      }
+      push(ref(db, PATH[tab]), payload);
+      cancelarResposta();
+      vibrar(15);
+      toast('✨ Figurinha enviada');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(fileOrBlob);
+}
+
 function processarImagem(ev, tab) {
   const file = ev.target.files[0]; if (!file) return;
   const reader = new FileReader();
@@ -876,7 +1032,12 @@ function processarImagem(ev, tab) {
       const b64 = c.toDataURL('image/jpeg', 0.65);
       const payload = { sender: eu, tipo: tab === 'secreto' ? 'imagem_unica' : 'imagem', conteudo: b64, timestamp: serverTimestamp() };
       if (tab === 'secreto') payload.aberta = false;
+      if (respondendo) {
+        payload.replyTo = respondendo.texto;
+        payload.replyId = respondendo.chave;
+      }
       push(ref(db, PATH[tab]), payload);
+      cancelarResposta();
       toast(tab === 'secreto' ? '📸 Foto enviada · visualização única' : '📷 Foto enviada');
     };
     img.src = e.target.result;
@@ -884,6 +1045,7 @@ function processarImagem(ev, tab) {
   reader.readAsDataURL(file);
   ev.target.value = '';
 }
+
 function abrirViewer(src, titulo) {
   $('viewer-img').src = src; $('viewer-title').textContent = titulo || '';
   $('viewer').classList.add('show');

@@ -17,7 +17,7 @@
   --bg:#08080b; --panel:#121217; --panel2:#1a1a22;
   --primary:#ff3b5c; --primary2:#c9143b; --fire:#ff8a1f;
   --text:#f4f4f7; --muted:#868694;
-  --glass:rgba(16,16,22,.78); --line:rgba(255,255,255,.08);
+  --glass:rgba(16,16,22,.82); --line:rgba(255,255,255,.08);
   --sec-bg:#050408; --sec:#a21fff; --sec2:#680cb8;
   --sab:env(safe-area-inset-bottom,0px); --sat:env(safe-area-inset-top,0px);
 }
@@ -63,11 +63,11 @@ button{font-family:inherit}
 .icon-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-size:14px;cursor:pointer;transition:.15s}
 .icon-btn:active{transform:scale(.88);background:rgba(255,255,255,.12);color:#fff}
 
-.view{display:none;flex:1;min-height:0;flex-direction:column}
+.view{display:none;flex:1;min-height:0;flex-direction:column;position:relative}
 .view.active{display:flex}
 
 /* ===== Sintonia ===== */
-#view-sintonia{align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden;
+#view-sintonia{align-items:center;justify-content:center;padding:20px;overflow:hidden;
   background:radial-gradient(75% 55% at 50% 42%,var(--aura,rgba(255,255,255,.04)) 0%,transparent 72%)}
 #view-sintonia[data-s=beating]{--aura:rgba(255,59,92,.24)}
 #view-sintonia[data-s=sync]{--aura:rgba(255,120,30,.26)}
@@ -100,12 +100,26 @@ button{font-family:inherit}
 @keyframes miniUp{0%{opacity:0;transform:translate(0,0) scale(.4)}15%{opacity:1}100%{opacity:0;transform:translate(var(--x,0),-260px) scale(1.2) rotate(var(--r,0deg))}}
 
 /* ===== Chat & Swipe to Reply ===== */
-.messages{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:14px 12px 10px;display:flex;flex-direction:column;gap:3px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+.messages-wrap{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}
+.messages{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:14px 12px 14px;display:flex;flex-direction:column;gap:3px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
 .day{align-self:center;font-size:11px;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--line);padding:4px 12px;border-radius:12px;margin:12px 0 8px;font-weight:500}
-.mw{display:flex;flex-direction:column;max-width:82%;position:relative;touch-action:pan-y;border-radius:18px;transition:background .3s}
+.mw{display:flex;flex-direction:column;max-width:82%;position:relative;touch-action:pan-y;border-radius:18px}
 .mw.mine{align-self:flex-end;align-items:flex-end}
 .mw.theirs{align-self:flex-start;align-items:flex-start}
 .mw.first{margin-top:8px}
+.mw.has-like{margin-bottom:10px}
+
+/* Botão flutuante descer chat */
+.scroll-btn{
+  position:absolute;right:14px;bottom:12px;z-index:15;
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(24,24,32,.92);border:1px solid rgba(255,255,255,.14);
+  color:var(--text);display:none;place-items:center;font-size:14px;
+  box-shadow:0 6px 18px rgba(0,0,0,.45);backdrop-filter:blur(10px);cursor:pointer;
+}
+.scroll-btn.show{display:grid;animation:pop .2s ease-out}
+.scroll-btn .sb-dot{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:var(--primary);display:none}
+.scroll-btn.has-new .sb-dot{display:block}
 
 /* Destaque ao clicar na mensagem respondida */
 .mw.highlight .bubble{animation:msgHighlight 1.6s ease-out}
@@ -143,6 +157,17 @@ button{font-family:inherit}
 .bubble .meta{display:flex;justify-content:flex-end;align-items:center;gap:5px;font-size:10px;opacity:.68;margin-top:3px;white-space:normal}
 .bubble .meta .read{color:#8de3ff;opacity:1}
 
+/* Reação ❤️ por toque duplo */
+.like-pill{
+  position:absolute;bottom:-11px;left:10px;
+  background:var(--panel);border:1px solid rgba(255,255,255,.14);
+  border-radius:12px;padding:1px 6px;font-size:12px;line-height:1.3;
+  box-shadow:0 3px 10px rgba(0,0,0,.45);z-index:4;
+  animation:likePop .28s cubic-bezier(.34,1.56,.64,1);
+}
+.mine .like-pill{left:auto;right:10px}
+@keyframes likePop{0%{transform:scale(0)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+
 /* Mídia e Figurinhas */
 .bubble.bare{background:none!important;border:none!important;padding:0;box-shadow:none!important}
 .bubble.bare .meta{padding:4px 6px 0;background:rgba(0,0,0,.35);border-radius:10px;width:fit-content;margin-left:auto;margin-top:4px}
@@ -171,6 +196,37 @@ button{font-family:inherit}
 .empty{margin:auto;text-align:center;color:var(--muted);font-size:13px;line-height:1.6;padding:30px}
 .empty i{display:block;font-size:30px;margin-bottom:10px;color:var(--primary);opacity:.8}
 
+/* ===== Bandeja Rápida de Figurinhas ===== */
+.sticker-tray{
+  display:none;flex-direction:column;gap:10px;
+  padding:12px;background:var(--panel);border-top:1px solid var(--line);
+  animation:trayUp .2s ease-out;
+}
+.sticker-tray.show{display:flex}
+@keyframes trayUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.tray-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tray-actions{display:flex;gap:8px;flex:1}
+.tray-act{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:8px 10px;border-radius:12px;border:1px solid var(--line);
+  background:rgba(255,255,255,.05);color:var(--text);font-size:12px;font-weight:500;cursor:pointer;
+}
+.tray-act:active{transform:scale(.96);background:rgba(255,255,255,.12)}
+.tray-act.paste-act i{color:#ffb347}
+.tray-act.pick-act i{color:#6ec6ff}
+.tray-close{width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.06);color:var(--muted);cursor:pointer;display:grid;place-items:center}
+.tray-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+  max-height:168px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:2px;
+}
+.tray-item{
+  aspect-ratio:1;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid var(--line);
+  display:grid;place-items:center;padding:6px;cursor:pointer;position:relative;transition:.14s;
+}
+.tray-item:active{transform:scale(.9);background:rgba(255,255,255,.1)}
+.tray-item img{width:100%;height:100%;object-fit:contain;pointer-events:none}
+.tray-empty{grid-column:1/-1;text-align:center;font-size:12px;color:var(--muted);padding:16px 8px;line-height:1.45}
+
 .quick{display:flex;gap:8px;padding:6px 12px;overflow-x:auto;scrollbar-width:none}
 .quick::-webkit-scrollbar{display:none}
 .quick button{flex:none;border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:20px;padding:5px 13px;font-size:20px;cursor:pointer;transition:.12s}
@@ -186,6 +242,7 @@ button{font-family:inherit}
 .round:active{transform:scale(.88)}
 .round.attach{background:var(--panel);color:var(--muted);border:1px solid var(--line)}
 .round.sticker-btn{background:var(--panel);color:#ffb347;border:1px solid var(--line)}
+.round.sticker-btn.open{background:rgba(255,179,71,.18);border-color:rgba(255,179,71,.5)}
 .round.send{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 4px 16px rgba(255,59,92,.35)}
 
 /* ===== Secreto ===== */
@@ -197,6 +254,8 @@ button{font-family:inherit}
 #view-secreto .composer input[type=text]:focus{border-color:rgba(162,31,255,.7)}
 #view-secreto .round.send{background:linear-gradient(135deg,var(--sec),var(--sec2));box-shadow:0 4px 16px rgba(162,31,255,.4)}
 #view-secreto .round.attach,#view-secreto .round.sticker-btn{background:#120a1d;color:var(--sec);border-color:rgba(162,31,255,.25)}
+#view-secreto .round.sticker-btn.open{background:rgba(162,31,255,.22);border-color:var(--sec)}
+#view-secreto .sticker-tray{background:#0e0716;border-top-color:rgba(162,31,255,.2)}
 #view-secreto .reply-bar{background:#100818}
 #view-secreto .reply-bar i.l{color:var(--sec)}
 #view-secreto .day{background:rgba(162,31,255,.1);color:#b98aff}
@@ -284,14 +343,27 @@ button{font-family:inherit}
   </div>
 
   <div id="view-chat" class="view">
-    <div class="messages" id="messages-chat"></div>
+    <div class="messages-wrap">
+      <div class="messages" id="messages-chat"></div>
+      <button class="scroll-btn" id="scroll-chat" title="Ir para o fim"><i class="fa-solid fa-chevron-down"></i><span class="sb-dot"></span></button>
+    </div>
     <div class="quick" id="quick">
       <button data-e="🥺">🥺</button><button data-e="😍">😍</button><button data-e="😘">😘</button><button data-e="💞">💞</button><button data-e="🔥">🔥</button><button data-e="🥰">🥰</button><button data-e="😈">😈</button>
+    </div>
+    <div class="sticker-tray" id="tray-chat">
+      <div class="tray-head">
+        <div class="tray-actions">
+          <button class="tray-act paste-act" data-tray-paste="chat"><i class="fa-solid fa-paste"></i> Colar do iPhone</button>
+          <button class="tray-act pick-act" data-tray-pick="chat"><i class="fa-solid fa-images"></i> Galeria</button>
+        </div>
+        <button class="tray-close" data-tray-close><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="tray-grid" id="tray-grid-chat"></div>
     </div>
     <div class="reply-bar" id="reply-chat"><i class="fa-solid fa-reply l"></i><span></span><i class="fa-solid fa-xmark x"></i></div>
     <div class="composer">
       <button class="round attach" data-attach="chat" title="Enviar foto"><i class="fa-solid fa-camera"></i></button>
-      <button class="round sticker-btn" data-sticker="chat" title="Enviar figurinha"><i class="fa-solid fa-note-sticky"></i></button>
+      <button class="round sticker-btn" data-sticker="chat" title="Figurinhas"><i class="fa-solid fa-note-sticky"></i></button>
       <input type="text" id="input-chat" placeholder="Mensagem ou cole figurinha" enterkeyhint="send" autocomplete="off" autocorrect="on">
       <button class="round send" data-send="chat"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
@@ -302,11 +374,24 @@ button{font-family:inherit}
       <div class="l"><i class="fa-solid fa-user-secret"></i> Modo privado</div>
       <button class="burn" id="btn-burn"><i class="fa-solid fa-fire"></i> Apagar tudo</button>
     </div>
-    <div class="messages" id="messages-secreto"></div>
+    <div class="messages-wrap">
+      <div class="messages" id="messages-secreto"></div>
+      <button class="scroll-btn" id="scroll-secreto" title="Ir para o fim"><i class="fa-solid fa-chevron-down"></i><span class="sb-dot"></span></button>
+    </div>
+    <div class="sticker-tray" id="tray-secreto">
+      <div class="tray-head">
+        <div class="tray-actions">
+          <button class="tray-act paste-act" data-tray-paste="secreto"><i class="fa-solid fa-paste"></i> Colar do iPhone</button>
+          <button class="tray-act pick-act" data-tray-pick="secreto"><i class="fa-solid fa-images"></i> Galeria</button>
+        </div>
+        <button class="tray-close" data-tray-close><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="tray-grid" id="tray-grid-secreto"></div>
+    </div>
     <div class="reply-bar" id="reply-secreto"><i class="fa-solid fa-reply l"></i><span></span><i class="fa-solid fa-xmark x"></i></div>
     <div class="composer">
       <button class="round attach" data-attach="secreto" title="Foto de visualização única"><i class="fa-solid fa-camera"></i></button>
-      <button class="round sticker-btn" data-sticker="secreto" title="Enviar figurinha"><i class="fa-solid fa-note-sticky"></i></button>
+      <button class="round sticker-btn" data-sticker="secreto" title="Figurinhas"><i class="fa-solid fa-note-sticky"></i></button>
       <input type="text" id="input-secreto" placeholder="Mensagem secreta" enterkeyhint="send" autocomplete="off">
       <button class="round send" data-send="secreto"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
@@ -344,6 +429,8 @@ const NOME_PARCEIRO = 'Coração';
 const PINS = { '1509': ['user_a', 'user_b'], '1507': ['user_b', 'user_a'] };
 const LOCK_AFTER_MS = 60000;
 const PATH = { chat: 'chat', secreto: 'chat_secreto' };
+const STICKER_STORAGE_KEY = 'ne_recent_stickers_v1';
+const MAX_RECENT_STICKERS = 16;
 
 let eu = '', outro = '';
 let R = {};
@@ -390,6 +477,97 @@ function visto(ts) {
   return hoje ? `visto hoje às ${hhmm(ts)}` : `visto ${diaLabel(ts).toLowerCase()} às ${hhmm(ts)}`;
 }
 function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+/* ---------- histórico local de figurinhas ---------- */
+function getRecentStickers() {
+  try {
+    const raw = localStorage.getItem(STICKER_STORAGE_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list : [];
+  } catch (e) { return []; }
+}
+function saveRecentSticker(dataUrl) {
+  if (!dataUrl || typeof dataUrl !== 'string') return;
+  try {
+    let list = getRecentStickers().filter(item => item !== dataUrl);
+    list.unshift(dataUrl);
+    if (list.length > MAX_RECENT_STICKERS) list = list.slice(0, MAX_RECENT_STICKERS);
+    localStorage.setItem(STICKER_STORAGE_KEY, JSON.stringify(list));
+    renderStickerTray('chat');
+    renderStickerTray('secreto');
+  } catch (e) {
+    // Se exceder quota do localStorage, mantém apenas as 8 mais recentes
+    try {
+      const menor = getRecentStickers().slice(0, 7);
+      menor.unshift(dataUrl);
+      localStorage.setItem(STICKER_STORAGE_KEY, JSON.stringify(menor));
+    } catch (_) {}
+  }
+}
+function removeRecentSticker(dataUrl) {
+  try {
+    const list = getRecentStickers().filter(item => item !== dataUrl);
+    localStorage.setItem(STICKER_STORAGE_KEY, JSON.stringify(list));
+    renderStickerTray('chat');
+    renderStickerTray('secreto');
+    toast('Figurinha removida da bandeja');
+  } catch (e) {}
+}
+
+function renderStickerTray(tab) {
+  const grid = $('tray-grid-' + tab);
+  if (!grid) return;
+  const list = getRecentStickers();
+  grid.innerHTML = '';
+  if (!list.length) {
+    const empty = el('div', 'tray-empty', 'Suas últimas figurinhas aparecerão aqui automaticamente para reenviar com 1 toque.');
+    grid.appendChild(empty);
+    return;
+  }
+  list.forEach(src => {
+    const item = el('button', 'tray-item');
+    item.type = 'button';
+    const img = el('img');
+    img.src = src;
+    img.loading = 'lazy';
+    item.appendChild(img);
+
+    let holdT = null, held = false;
+    item.addEventListener('touchstart', () => {
+      held = false;
+      holdT = setTimeout(() => {
+        held = true;
+        vibrar(25);
+        if (confirm('Remover esta figurinha da bandeja rápida?')) removeRecentSticker(src);
+      }, 650);
+    }, { passive: true });
+    item.addEventListener('touchend', () => clearTimeout(holdT));
+    item.addEventListener('touchmove', () => clearTimeout(holdT), { passive: true });
+
+    item.addEventListener('click', () => {
+      if (held) return;
+      enviarFigurinhaDataUrl(src, tab);
+    });
+    grid.appendChild(item);
+  });
+}
+
+function toggleStickerTray(tab, forceState) {
+  const tray = $('tray-' + tab);
+  const btn = document.querySelector(`[data-sticker="${tab}"]`);
+  const abrir = typeof forceState === 'boolean' ? forceState : !tray.classList.contains('show');
+  fecharTodasBandejas();
+  if (abrir) {
+    renderStickerTray(tab);
+    tray.classList.add('show');
+    if (btn) btn.classList.add('open');
+    scrollBottom(tab);
+  }
+}
+function fecharTodasBandejas() {
+  document.querySelectorAll('.sticker-tray').forEach(t => t.classList.remove('show'));
+  document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('open'));
+}
 
 /* ---------- links clicáveis ---------- */
 const URL_RE = /((?:https?:\/\/|www\.)[^\s<>"]+|(?:[a-z0-9-]+\.)*(?:instagram\.com|instagr\.am|youtu\.be|youtube\.com|tiktok\.com|vm\.tiktok\.com|twitter\.com|x\.com|facebook\.com|fb\.watch|spotify\.com|open\.spotify\.com|wa\.me|pinterest\.com|pin\.it|g\.co|maps\.app\.goo\.gl|goo\.gl)\/[^\s<>"]*)/gi;
@@ -462,7 +640,7 @@ function verificarPin() {
 /* ---------- bloqueio ---------- */
 function bloquear() {
   if (!appReady) return;
-  locked = true; stopTyping();
+  locked = true; stopTyping(); fecharTodasBandejas();
   $('login').classList.remove('hide');
   $('app').style.display = 'none';
   setPresenca(false);
@@ -478,7 +656,7 @@ $('btn-lock').addEventListener('click', bloquear);
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
     $('shield').classList.add('show'); hiddenAt = Date.now();
-    if (appReady && !locked) setPresenca(false);
+    if (appReady && !locked) { stopTyping(); setPresenca(false); }
   } else {
     $('shield').classList.remove('show');
     if (appReady && !locked) {
@@ -523,7 +701,14 @@ function inicializar(a, b) {
   ['chat', 'secreto'].forEach(t => {
     onValue(query(ref(db, PATH[t]), limitToLast(100)), snap => {
       const arr = [];
-      snap.forEach(c => { arr.push({ chave: c.key, ...c.val() }); });
+      snap.forEach(c => {
+        const val = c.val();
+        arr.push({ chave: c.key, ...val });
+        // Alimenta automaticamente a bandeja rápida com figurinhas recebidas no chat normal
+        if (t === 'chat' && val && val.tipo === 'figurinha' && val.conteudo) {
+          saveRecentSticker(val.conteudo);
+        }
+      });
       arr.sort((x, y) => (x.timestamp || 0) - (y.timestamp || 0));
       cache[t] = arr; renderTab(t); atualizarBadges(); marcarLido();
     });
@@ -617,7 +802,7 @@ document.querySelector('.nav').addEventListener('click', e => {
   const it = e.target.closest('.nav-item'); if (it) mudarAba(it.dataset.tab);
 });
 function mudarAba(a) {
-  aba = a; cancelarResposta();
+  aba = a; cancelarResposta(); fecharTodasBandejas(); stopTyping();
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   $('view-' + a).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => {
@@ -647,6 +832,27 @@ function atualizarBadges() {
   $('bd-sintonia').classList.toggle('show', par.state === 'pensando' && aba !== 'sintonia');
 }
 
+/* ---------- controle de scroll ---------- */
+function scrollBottom(t) {
+  const a = $('messages-' + t);
+  const btn = $('scroll-' + t);
+  if (!a) return;
+  requestAnimationFrame(() => {
+    a.scrollTop = a.scrollHeight;
+    if (btn) btn.classList.remove('show', 'has-new');
+  });
+}
+['chat', 'secreto'].forEach(t => {
+  const area = $('messages-' + t);
+  const btn = $('scroll-' + t);
+  area.addEventListener('scroll', () => {
+    const dist = area.scrollHeight - area.scrollTop - area.clientHeight;
+    if (dist > 220) btn.classList.add('show');
+    else btn.classList.remove('show', 'has-new');
+  }, { passive: true });
+  btn.addEventListener('click', () => scrollBottom(t));
+});
+
 /* ---------- destacar mensagem original ao clicar na resposta ---------- */
 function destacarMensagem(tab, targetChave) {
   if (!targetChave) return;
@@ -658,24 +864,20 @@ function destacarMensagem(tab, targetChave) {
   }
   alvo.scrollIntoView({ behavior: 'smooth', block: 'center' });
   alvo.classList.remove('highlight');
-  void alvo.offsetWidth; // força reinício da animação
+  void alvo.offsetWidth;
   alvo.classList.add('highlight');
   vibrar(15);
   setTimeout(() => alvo.classList.remove('highlight'), 1700);
 }
 
-/* ---------- renderização do chat + Swipe to Reply (inclui imagens) ---------- */
-function scrollBottom(t, force) {
-  const a = $('messages-' + t); if (!a) return;
-  requestAnimationFrame(() => { a.scrollTop = a.scrollHeight; });
-}
-
+/* ---------- renderização do chat + Swipe to Reply + Toque Duplo ❤️ ---------- */
 const ehLink = ev => !!(ev.target && ev.target.closest && ev.target.closest('a.lnk'));
 
-function configurarGestosBolha(wrapper, bubble, swipeIcon, onSwipeReply, onLongDelete) {
+function configurarGestosBolha(wrapper, bubble, swipeIcon, onSwipeReply, onDoubleTapLike, onLongDelete) {
   let startX = 0, startY = 0, dx = 0;
   let tracking = false, swiping = false, vibrado = false;
   let longTimer = null, longFired = false;
+  let lastTapTime = 0;
   const THRESHOLD = 52;
 
   const limparTimer = () => { if (longTimer) { clearTimeout(longTimer); longTimer = null; } };
@@ -744,9 +946,10 @@ function configurarGestosBolha(wrapper, bubble, swipeIcon, onSwipeReply, onLongD
     }
   };
 
-  const finalizarToque = () => {
+  const finalizarToque = ev => {
     limparTimer();
     if (!tracking && !swiping) return;
+    const eraSwipe = swiping;
     const disparar = swiping && dx >= THRESHOLD;
     if (swiping) ultimoSwipeEm = Date.now();
     tracking = false;
@@ -761,10 +964,21 @@ function configurarGestosBolha(wrapper, bubble, swipeIcon, onSwipeReply, onLongD
 
     if (disparar && onSwipeReply) {
       setTimeout(() => onSwipeReply(), 80);
+      return;
+    }
+
+    // Detecta toque duplo para reagir com ❤️
+    if (!eraSwipe && !longFired && !ehLink(ev) && onDoubleTapLike) {
+      const agora = Date.now();
+      if (agora - lastTapTime < 280) {
+        lastTapTime = 0;
+        onDoubleTapLike();
+      } else {
+        lastTapTime = agora;
+      }
     }
   };
 
-  // Escuta no wrapper e na bolha para funcionar perfeitamente também sobre imagens e figurinhas
   wrapper.addEventListener('touchstart', onStart, { passive: true });
   wrapper.addEventListener('touchmove', onMove, { passive: false });
   wrapper.addEventListener('touchend', finalizarToque);
@@ -775,6 +989,13 @@ function configurarGestosBolha(wrapper, bubble, swipeIcon, onSwipeReply, onLongD
     e.preventDefault();
     if (!longFired && onLongDelete) onLongDelete();
   });
+}
+
+function alternarCurtida(tab, m) {
+  const atual = m.likes || {};
+  const jaCurti = !!atual[eu];
+  update(ref(db, `${PATH[tab]}/${m.chave}/likes`), { [eu]: jaCurti ? null : true });
+  if (!jaCurti) vibrar([15, 30, 15]);
 }
 
 function renderTab(tab) {
@@ -800,7 +1021,10 @@ function renderTab(tab) {
     const agrup = senderAnt === m.sender && (ts - tsAnt) < 120000;
     senderAnt = m.sender; tsAnt = ts;
 
-    const w = el('div', 'mw ' + (mine ? 'mine' : 'theirs') + (agrup ? ' grouped' : ' first'));
+    const likesObj = m.likes || {};
+    const totalLikes = Object.values(likesObj).filter(Boolean).length;
+
+    const w = el('div', 'mw ' + (mine ? 'mine' : 'theirs') + (agrup ? ' grouped' : ' first') + (totalLikes ? ' has-like' : ''));
     w.dataset.msgId = m.chave;
 
     const swipeIcon = el('div', 'swipe-icon');
@@ -818,7 +1042,6 @@ function renderTab(tab) {
         if (m.replyId) {
           destacarMensagem(tab, m.replyId);
         } else {
-          // Compatibilidade com mensagens antigas sem replyId
           const antiga = cache[tab].find(x => (x.conteudo === m.replyTo) || (m.replyTo === '📷 Foto' && x.tipo === 'imagem') || (m.replyTo === '✨ Figurinha' && x.tipo === 'figurinha'));
           if (antiga) destacarMensagem(tab, antiga.chave);
         }
@@ -827,7 +1050,6 @@ function renderTab(tab) {
     }
 
     let resumo = m.conteudo;
-    let podeResponder = true;
 
     if (m.tipo === 'imagem') {
       b.classList.add('bare');
@@ -860,7 +1082,6 @@ function renderTab(tab) {
         });
       }
       b.appendChild(box); resumo = '📷 Foto única';
-      if (aberta) podeResponder = false;
     } else {
       adicionarTexto(b, m.conteudo || '');
     }
@@ -874,22 +1095,35 @@ function renderTab(tab) {
     }
     b.appendChild(meta);
 
+    if (totalLikes > 0) {
+      const pill = el('div', 'like-pill', totalLikes > 1 ? '❤️ 2' : '❤️');
+      b.appendChild(pill);
+    }
+
     configurarGestosBolha(
       w,
       b,
       swipeIcon,
-      podeResponder ? () => iniciarResposta({ chave: m.chave, texto: resumo }) : null,
+      () => iniciarResposta({ chave: m.chave, texto: resumo }),
+      () => alternarCurtida(tab, m),
       mine ? () => { if (confirm('Apagar esta mensagem para os dois?')) remove(ref(db, `${PATH[tab]}/${m.chave}`)); } : null
     );
 
     w.appendChild(b); area.appendChild(w);
   });
-  if (primeira || perto || msgs[msgs.length - 1].sender === eu) scrollBottom(tab);
+
+  const ultima = msgs[msgs.length - 1];
+  if (primeira || perto || ultima.sender === eu) {
+    scrollBottom(tab);
+  } else {
+    $('scroll-' + tab).classList.add('show', 'has-new');
+  }
 }
 
 /* ---------- resposta ---------- */
 function iniciarResposta(obj) {
   if (aba === 'sintonia') return;
+  fecharTodasBandejas();
   respondendo = obj;
   const rb = $('reply-' + aba); rb.style.display = 'flex';
   rb.querySelector('span').textContent = obj.texto;
@@ -921,6 +1155,7 @@ document.querySelectorAll('[data-send]').forEach(b => {
 ['chat', 'secreto'].forEach(t => {
   const i = $('input-' + t);
   i.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); enviar(t); } });
+  i.addEventListener('focus', () => fecharTodasBandejas());
   i.addEventListener('input', onTyping);
 
   // Captura figurinhas coladas diretamente do teclado/clipboard do iPhone
@@ -948,15 +1183,22 @@ function stopTyping() {
   if (typing) { typing = false; if (R.meu) update(R.meu, { typing: false }); }
 }
 
-/* ---------- fotos e figurinhas do iPhone ---------- */
+/* ---------- fotos e figurinhas do iPhone + bandeja ---------- */
 document.querySelectorAll('[data-attach]').forEach(b => b.addEventListener('click', () => {
+  fecharTodasBandejas();
   if (b.dataset.attach === 'secreto') toast('📸 A foto será de visualização única');
   $('file-' + b.dataset.attach).click();
 }));
 
-// Botão de figurinha: tenta ler figurinha copiada do iPhone ou abre seletor
-document.querySelectorAll('[data-sticker]').forEach(b => b.addEventListener('click', async () => {
-  const tab = b.dataset.sticker;
+// Abre/fecha a bandeja rápida de figurinhas
+document.querySelectorAll('[data-sticker]').forEach(b => b.addEventListener('click', () => {
+  toggleStickerTray(b.dataset.sticker);
+}));
+document.querySelectorAll('[data-tray-close]').forEach(b => b.addEventListener('click', fecharTodasBandejas));
+
+// Ação: Colar figurinha copiada no iPhone
+document.querySelectorAll('[data-tray-paste]').forEach(b => b.addEventListener('click', async () => {
+  const tab = b.dataset.trayPaste;
   if (navigator.clipboard && navigator.clipboard.read) {
     try {
       const items = await navigator.clipboard.read();
@@ -968,12 +1210,18 @@ document.querySelectorAll('[data-sticker]').forEach(b => b.addEventListener('cli
           return;
         }
       }
-    } catch (err) {
-      // Sem permissão de clipboard ou vazio -> abre seletor de arquivo
-    }
+      toast('Nenhuma figurinha copiada na memória');
+      return;
+    } catch (err) {}
   }
-  toast('✨ Escolha a figurinha ou cole no campo de texto');
-  $('sticker-file-' + tab).click();
+  toast('Toque no campo de mensagem e escolha "Colar"');
+  fecharTodasBandejas();
+  $('input-' + tab).focus();
+}));
+
+// Ação: Escolher figurinha da galeria
+document.querySelectorAll('[data-tray-pick]').forEach(b => b.addEventListener('click', () => {
+  $('sticker-file-' + b.dataset.trayPick).click();
 }));
 
 ['chat', 'secreto'].forEach(t => {
@@ -984,6 +1232,19 @@ document.querySelectorAll('[data-sticker]').forEach(b => b.addEventListener('cli
     e.target.value = '';
   });
 });
+
+function enviarFigurinhaDataUrl(dataUrl, tab) {
+  const payload = { sender: eu, tipo: 'figurinha', conteudo: dataUrl, timestamp: serverTimestamp() };
+  if (respondendo) {
+    payload.replyTo = respondendo.texto;
+    payload.replyId = respondendo.chave;
+  }
+  push(ref(db, PATH[tab]), payload);
+  if (tab === 'chat') saveRecentSticker(dataUrl);
+  cancelarResposta();
+  fecharTodasBandejas();
+  vibrar(15);
+}
 
 function enviarArquivoComoFigurinha(fileOrBlob, tab) {
   const reader = new FileReader();
@@ -999,19 +1260,11 @@ function enviarArquivoComoFigurinha(fileOrBlob, tab) {
       const ctx = c.getContext('2d');
       ctx.clearRect(0, 0, w, h);
       ctx.drawImage(img, 0, 0, w, h);
-      // WebP ou PNG preserva a transparência das figurinhas do iPhone
       let dataUrl = c.toDataURL('image/webp', 0.82);
       if (!dataUrl.startsWith('data:image/webp')) {
         dataUrl = c.toDataURL('image/png');
       }
-      const payload = { sender: eu, tipo: 'figurinha', conteudo: dataUrl, timestamp: serverTimestamp() };
-      if (respondendo) {
-        payload.replyTo = respondendo.texto;
-        payload.replyId = respondendo.chave;
-      }
-      push(ref(db, PATH[tab]), payload);
-      cancelarResposta();
-      vibrar(15);
+      enviarFigurinhaDataUrl(dataUrl, tab);
       toast('✨ Figurinha enviada');
     };
     img.src = e.target.result;
